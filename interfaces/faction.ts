@@ -4,5 +4,6 @@ export interface Faction {
     region: string;
     military: boolean;
     terror: boolean;
-    neighbour?:string;
+    neighbour?: Faction['id'];
 }
+
