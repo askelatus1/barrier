@@ -1,6 +1,8 @@
 export interface Faction {
-    id:number;
-    name:string;
-    region:string;
-    military:boolean;
+    id: string;
+    name: string;
+    region: string;
+    military: boolean;
+    terror: boolean;
+    //neighbour:;
 }

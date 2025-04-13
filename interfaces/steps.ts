@@ -1,6 +1,7 @@
 import {BarrierEvent} from "./event";
 
-export interface Steps extends BarrierEvent {
+export interface Step extends BarrierEvent {
     type: 'step';
     final: boolean;
+    timeout: number;
 }
