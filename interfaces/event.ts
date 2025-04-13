@@ -6,6 +6,7 @@ export interface BarrierEvent {
     actors: Faction[];
     actorRule: ActorType[];
     territoryRule: ActorType[];
+    military: boolean;
 }
 export type ActorType = 'intiator' | 'victim' | 'both' | 'random' | 'neutral';
 export interface Type {
