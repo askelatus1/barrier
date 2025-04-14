@@ -94,7 +94,7 @@ export const barrierEvent: BarrierEvent[] = [
 
 ]
 
-export const StepEvent: Step[] = [
+export const stepEvent: Step[] = [
     {
         id: 'attack',
         type: 'step',
