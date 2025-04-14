@@ -1,11 +1,12 @@
-import {BarrierContext} from "../../interfaces/core";
+import {BarrierContext} from "../../interfaces";
 import {clearTimeout} from "node:timers";
 
 export class GameCore {
+    ttl: number = 0;
     constructor(private ctx: BarrierContext, public timeout: number) {
         ctx.core = this;
+        this.ttl = this.ctx.random.getRandomInt(10);
     }
-
     scheduler: NodeJS.Timeout;
     start() {
         if(!this.scheduler) this.scheduler = setTimeout(() => this.tick(), this.timeout ?? 5000);
@@ -16,8 +17,11 @@ export class GameCore {
 
     tick(){
         // logic
-
-
+        if(!this.ttl) this.addEvent();
         this.scheduler = setTimeout(() => this.tick(), this.timeout ?? 5000);
+    }
+
+    addEvent(): void {
+        this.ttl = this.ctx.random.getRandomInt(10);
     }
 }

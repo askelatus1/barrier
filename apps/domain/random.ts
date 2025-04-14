@@ -1,11 +1,11 @@
-import {BarrierContext} from "../../interfaces/core";
+import {BarrierContext} from "../../interfaces";
 
 export class BarrierRandom {
     constructor(private ctx: BarrierContext) {
         ctx.random = this;
     }
 
-    static getRandomInt(max) {
+    getRandomInt(max) {
         return Math.floor(Math.random() * max);
     }
 
@@ -18,7 +18,7 @@ export class BarrierRandom {
         const result = [];
         for (let i = 0; i < count; i++) {
             const virtualList = [...list.filter((item) => !result.includes(item))];
-            result.push(virtualList[BarrierRandom.getRandomInt(virtualList.length)]);
+            result.push(virtualList[this.getRandomInt(virtualList.length)]);
         }
         return result;
     }
