@@ -3,8 +3,10 @@ export interface BarrierEvent {
     type: BarrierEventType;
     title: string;
     actorRule: ActorType[];
-    territoryRule: ActorType[];
+    territoryRuleActor1: territoryType[];
+    territoryRuleActor2: territoryType[];
     military: boolean;
 }
-export type ActorType = 'military' | 'civilian' | 'neutral';
-export type BarrierEventType = 'step' | 'event'
+export type ActorType = 'military' | 'civilian';
+export type BarrierEventType = 'step' | 'event' ;
+export type territoryType = 'initiator' |  'victim' | 'both';
