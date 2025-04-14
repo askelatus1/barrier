@@ -1,4 +1,4 @@
-import {Faction} from "../interfaces/faction";
+import {Faction} from "../interfaces";
 
 export const faction: Faction[] = [
     {
@@ -17,7 +17,6 @@ export const faction: Faction[] = [
         terror: false,
         neighbour: 'monolith',
     },
-
     {
         id: 'skyline',
         name: 'Скайлайн',
