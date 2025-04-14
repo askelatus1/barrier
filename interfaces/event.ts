@@ -1,10 +1,7 @@
-import {Faction} from "./faction";
-
 export interface BarrierEvent {
     id: string;
     type: BarrierEventType;
     title: string;
-    actors: Faction[];
     actorRule: ActorType[];
     territoryRule: ActorType[];
     military: boolean;
