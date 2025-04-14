@@ -7,3 +7,7 @@ export function getMilitary(actors: Faction[]): Faction[] {
 export function getCivilian(actors: Faction[]): Faction[] {
     return actors.filter(actor => !actor.military);
 }
+
+export function getTerrors(actors: Faction[]): Faction[] {
+    return actors.filter(actor => actor.military && actor.terror);
+}

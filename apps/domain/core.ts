@@ -19,9 +19,11 @@ export class GameCore {
         // logic
         if(!this.ttl) this.addEvent();
         this.scheduler = setTimeout(() => this.tick(), this.timeout ?? 5000);
+        this.ttl--;
     }
 
     addEvent(): void {
         this.ttl = this.ctx.random.getRandomInt(10);
+        this.ctx.eventEngine.createEvent();
     }
 }
