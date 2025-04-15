@@ -9,13 +9,13 @@ export class EventEngine {
 
     createEvent(): void {
         const targetEvent: BarrierEvent = BarrierRandom.selectRandom(barrierEvent);
-        console.log('EventEngine create event', targetEvent);
+        console.log('EventEngine create event', targetEvent.id, targetEvent.title);
         this.ctx.tracker.trackEvent(targetEvent);
     }
 
     createEventById(id: string): void {
         const ev = barrierEvent.find(event => event.id === id);
-        console.log('EventEngine create event manually', ev);
+        console.log('EventEngine create event manually', ev.id, ev.title);
         this.ctx.tracker.trackEvent(ev);
     }
 
