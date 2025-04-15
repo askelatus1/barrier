@@ -5,49 +5,49 @@ export const regionMap: Region[] = [
         id: 'moldavka',
         title: 'молдавка',
         status: 'peace',
-        neighbour: ['Piter', 'center', 'miltown']
+        neighbour: ['Piter' , 'center' , 'miltown' , 'varlamono']
     },
 
     {
         id: 'decabristov',
         title: 'декабристов',
         status: 'peace',
-        neighbour: ['center', 'krista', 'miltown'], // 'center | krista | miltown'
+        neighbour: ['center' , 'krista' , 'miltown']
     },
 
     {
         id: 'obrazcovo',
         title: 'Образцовская',
         status: 'peace',
-        neighbour: ['rudnik', 'mongora'] //'rudnik | mongora'
+        neighbour: ['rudnik' , 'mongora']
     },
 
     {
         id: 'mongora',
         title: 'монгора',
         status: 'peace',
-        neighbour: ['Piter', 'cerdavino', 'obrazcovo']
+        neighbour: ['Piter' , 'cerdavino' , 'obrazcovo' , 'center']
     },
 
     {
         id: 'shanghai',
         title: 'шанхай',
         status: 'peace',
-        neighbour: ['miltown']
+        neighbour: ['miltown' , 'krista']
     },
 
     {
         id: 'cerdavino',
         title: 'сердавино',
         status: 'wreckage',
-        neighbour: ['mongora', 'Piter', 'varlamono']
+        neighbour: ['mongora' , 'Piter' , 'varlamono']
     },
 
     {
         id: 'varlamono',
         title: 'варламово',
         status: 'peace',
-        neighbour: ['cerdavino', "Piter"]
+        neighbour: ['cerdavino' , 'Piter' , 'moldavka']
     },
 
     {
@@ -61,28 +61,28 @@ export const regionMap: Region[] = [
         id: 'krista',
         title: 'криста',
         status: 'peace',
-        neighbour: ['decabristov', 'miltown']
+        neighbour: ['decabristov' , 'miltown' , 'shanghai']
     },
 
     {
         id: 'center',
         title: 'центр',
         status: 'peace',
-        neighbour: ['moldavka', 'miltown', 'Piter', 'decabristov']
+        neighbour: ['moldavka' , 'miltown' , 'Piter' , 'decabristov' , 'mongora']
     },
 
     {
         id: 'miltown',
         title: 'военный городок',
         status: 'peace',
-        neighbour: ['shanghai', 'center', 'moldavka', 'krista', 'decabristov']
+        neighbour: ['shanghai' , 'center' , 'moldavka' , 'krista' , 'decabristov']
     },
 
     {
         id: 'Piter',
         title: 'питер',
         status: 'peace',
-        neighbour: ['center', 'moldavka', 'mongora', 'cerdavino', 'varlamono']
+        neighbour: ['center' , 'moldavka' , 'mongora' , 'cerdavino' , 'varlamono']
     }
 ] as const;
 
