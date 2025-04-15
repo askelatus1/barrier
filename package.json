@@ -6,7 +6,7 @@
   "directories": {
     "doc": "docs"
   },
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start:local": "nodemon",
@@ -26,7 +26,6 @@
     "@types/eslint": "^9.6.1",
     "@types/node": "^22.14.1",
     "eslint": "^9.24.0",
-    "eslint-config-standard": "^17.1.0",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-n": "^16.6.2",
     "eslint-plugin-promise": "^6.6.0",

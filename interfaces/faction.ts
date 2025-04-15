@@ -1,11 +1,12 @@
-import {regionsType} from "../dict/regionMap";
+import {RegionsType} from "../dict/regionMap";
+import {FactionType} from "../dict/factions";
 
 export interface Faction {
     id: string;
     name: string;
-    region: regionsType;
+    region: RegionsType;
     military: boolean;
     terror: boolean;
-    neighbours: regionsType[];
+    neighbours: FactionType[];
 }
 

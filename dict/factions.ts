@@ -4,10 +4,10 @@ export const faction: Faction[] = [
     {
         id: 'monolith',
         name: 'ЧВК "монолит"',
-        region: 'modavka',
+        region: 'moldavka',
         military: true,
         terror: false,
-        neighbour: 'sin | skyline',
+        neighbours: ['sin'],
     },
     {
         id: 'sin',
@@ -15,7 +15,7 @@ export const faction: Faction[] = [
         region:'decabristov',
         military: true,
         terror: false,
-        neighbour: 'monolith',
+        neighbours: ['monolith'],
     },
     {
         id: 'skyline',
@@ -23,6 +23,16 @@ export const faction: Faction[] = [
         region:'obrazcovo',
         military: true,
         terror: false,
-        neighbour: 'monolith',
-    }
+        neighbours: ['monolith'],
+    },
+    // {
+    //     id: 'civ_skyline',
+    //     region: 'obrazcovo',
+    //     military: false,
+    //     neighbours: ['monolith'],
+    //     name: 'Мирные скайлайн',
+    //     terror: false,
+    // }
 ];
+
+export type FactionType = 'monolith' | 'sin' | 'skyline';

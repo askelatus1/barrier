@@ -9,7 +9,7 @@ export type EnhancedTrack = Track & {scheduler: NodeJS.Timeout, steps: Step[]}
 
 export class BarrierTracker {
     pool: Map<string, EnhancedTrack> = new Map();
-    constructor(private ctx: BarrierContext, private timeoutRange = 100000) {
+    constructor(private ctx: BarrierContext, private timeoutRange = 1000) {
         ctx.tracker = this;
     }
     trackEvent(event: BarrierEvent): void {
@@ -22,7 +22,7 @@ export class BarrierTracker {
                 case "military":
                     return military.splice(BarrierRandom.getRandomInt(civilian.length), 1)[0];
             }
-        })
+        }).filter(Boolean);
         const track: Track = {
             id: crypto.randomUUID(),
             eventId: event.id,
@@ -32,6 +32,8 @@ export class BarrierTracker {
         };
 
         this.#addTrack(track)
+        console.log('createTrack by event: ', track, event);
+        this.ctx.notifier.notify(event, 'start')
     }
 
     getTracksByEvent(event: BarrierEvent): EnhancedTrack[] {
@@ -42,21 +44,29 @@ export class BarrierTracker {
         const targetTrack: EnhancedTrack = {...track, scheduler: undefined, steps: []};
         targetTrack.scheduler = setTimeout(() => this.#handleTrackStep(targetTrack), track.timeout ?? this.timeoutRange);
         this.pool.set(targetTrack.id, targetTrack);
-        this.ctx.notifier.notify(targetTrack)
     }
 
     #removeTrack(track: EnhancedTrack) {
+        console.log('remove track: ', track);
         this.pool.delete(track.id);
     }
 
     #handleTrackStep(track: EnhancedTrack) {
+        console.log('Tracker: new step by track: ', track.id);
         // create step
         const newStep = this.#createStep();
+        console.log('Tracker: new step created: ', newStep.id, newStep.title);
         // if step final noty and ending track
         track.steps.push(newStep);
+        this.ctx.notifier.notify(newStep);
+
         if (newStep.final) {
-            this.ctx.notifier.notify(track);
+            console.log('track ending: ', track.id);
+            const ev = this.ctx.eventEngine.getEventByTrack(track);
+            this.ctx.notifier.notify(ev, 'end');
             this.#removeTrack(track);
+        } else  {
+            setTimeout(() => this.#handleTrackStep(track), newStep.timeout)
         }
 
     }

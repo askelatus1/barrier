@@ -1,9 +1,9 @@
-import {regionsType} from "../dict/regionMap";
+import {RegionsType} from "../dict/regionMap";
 
 export interface Region {
-    id: regionsType;
+    id: RegionsType;
     title: string;
     status: Status;
-    neighbour: regionsType[]
+    neighbour: RegionsType[]
 }
 export type Status = 'war' | 'wreckage' | 'peace';

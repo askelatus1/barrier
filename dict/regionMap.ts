@@ -86,7 +86,7 @@ export const regionMap: Region[] = [
     }
 ] as const;
 
-export type regionsType =
+export type RegionsType =
     | 'moldavka'
     | 'decabristov'
     | 'obrazcovo'
