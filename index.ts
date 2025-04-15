@@ -16,5 +16,5 @@ new EventEngine(ctx);
 new BarrierTracker(ctx);
 new Notifier(ctx);
 
-// ctx.core.start();
-ctx.eventEngine.createEventById('humanitarian');
+ctx.core.start();
+// ctx.eventEngine.createEventById('humanitarian');
