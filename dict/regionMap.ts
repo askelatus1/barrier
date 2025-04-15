@@ -1,87 +1,101 @@
-import {Region, Status} from "../interfaces/region";
+import {Region} from "../interfaces";
 
-export const region: Region[] = [
+export const regionMap: Region[] = [
     {
-        id: 'modavka',
+        id: 'moldavka',
         title: 'молдавка',
         status: 'peace',
-        neighbour: 'Piter | center | miltown'
+        neighbour: ['Piter', 'center', 'miltown']
     },
 
     {
         id: 'decabristov',
         title: 'декабристов',
         status: 'peace',
-        neighbour: 'center | krista | miltown'
+        neighbour: ['center', 'krista', 'miltown'], // 'center | krista | miltown'
     },
 
     {
         id: 'obrazcovo',
         title: 'Образцовская',
         status: 'peace',
-        neighbour: 'rudnik | mongora'
+        neighbour: ['rudnik', 'mongora'] //'rudnik | mongora'
     },
 
     {
         id: 'mongora',
         title: 'монгора',
         status: 'peace',
-        neighbour: 'Piter | cerdavino | obrazcovo'
+        neighbour: ['Piter', 'cerdavino', 'obrazcovo']
     },
 
     {
         id: 'shanghai',
         title: 'шанхай',
         status: 'peace',
-        neighbour: 'miltown'
+        neighbour: ['miltown']
     },
 
     {
         id: 'cerdavino',
         title: 'сердавино',
         status: 'wreckage',
-        neighbour: 'mongora | Piter | varlamono'
+        neighbour: ['mongora', 'Piter', 'varlamono']
     },
 
     {
         id: 'varlamono',
         title: 'варламово',
         status: 'peace',
-        neighbour: 'cerdavino | Piter'
+        neighbour: ['cerdavino', "Piter"]
     },
 
     {
         id: 'rudnik',
         title: 'рудник',
         status: 'peace',
-        neighbour: 'obrazcovo'
+        neighbour: ['obrazcovo']
     },
 
     {
         id: 'krista',
         title: 'криста',
         status: 'peace',
-        neighbour: 'decabristov | miltown'
+        neighbour: ['decabristov', 'miltown']
     },
 
     {
         id: 'center',
         title: 'центр',
         status: 'peace',
-        neighbour: 'modavka | miltown | Piter | decabristov'
+        neighbour: ['moldavka', 'miltown', 'Piter', 'decabristov']
     },
 
     {
         id: 'miltown',
         title: 'военный городок',
         status: 'peace',
-        neighbour: 'shanghai | center | modavka | krista | decabristov'
+        neighbour: ['shanghai', 'center', 'moldavka', 'krista', 'decabristov']
     },
 
     {
         id: 'Piter',
         title: 'питер',
         status: 'peace',
-        neighbour: 'center | modavka | mongora | cerdavino | varlamono'
+        neighbour: ['center', 'moldavka', 'mongora', 'cerdavino', 'varlamono']
     }
-];
+] as const;
+
+export type regionsType =
+    | 'moldavka'
+    | 'decabristov'
+    | 'obrazcovo'
+    | 'mongora'
+    | 'shanghai'
+    | 'cerdavino'
+    | 'varlamono'
+    | 'rudnik'
+    | 'krista'
+    | 'center'
+    | 'miltown'
+    | 'Piter';

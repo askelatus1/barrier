@@ -1,12 +1,14 @@
+import {NotifyTemplate} from "./notify";
+
 export interface BarrierEvent {
     id: string;
     type: BarrierEventType;
     title: string;
     actorRule: ActorType[];
-    territoryRuleActor1: territoryType[];
-    territoryRuleActor2: territoryType[];
+    territoryRule: TerritoryRuleType;
     military: boolean;
+    notify?: NotifyTemplate
 }
 export type ActorType = 'military' | 'civilian';
 export type BarrierEventType = 'step' | 'event' ;
-export type territoryType = 'initiator' |  'victim' | 'both';
+export type TerritoryRuleType = 'initiator' |  'victim' | 'both';
