@@ -20,7 +20,7 @@ export class BarrierTracker {
                 case "civilian":
                     return civilian.splice(BarrierRandom.getRandomInt(civilian.length), 1)[0];
                 case "military":
-                    return military.splice(BarrierRandom.getRandomInt(civilian.length), 1)[0];
+                    return military.splice(BarrierRandom.getRandomInt(military.length), 1)[0];
             }
         }).filter(Boolean);
         const track: Track = {
@@ -33,7 +33,7 @@ export class BarrierTracker {
 
         this.#addTrack(track)
         console.log('createTrack by event: ', track, event);
-        this.ctx.notifier.notify(event, 'start')
+        this.ctx.notifier.notify(track, 'start')
     }
 
     getTracksByEvent(event: BarrierEvent): EnhancedTrack[] {
@@ -62,8 +62,7 @@ export class BarrierTracker {
 
         if (newStep.final) {
             console.log('track ending: ', track.id);
-            const ev = this.ctx.eventEngine.getEventByTrack(track);
-            this.ctx.notifier.notify(ev, 'end');
+            this.ctx.notifier.notify(track, 'end');
             this.#removeTrack(track);
         } else  {
             setTimeout(() => this.#handleTrackStep(track), newStep.timeout)

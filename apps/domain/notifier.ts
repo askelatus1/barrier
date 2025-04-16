@@ -15,10 +15,10 @@ export class Notifier {
         const event: BarrierEvent = track ? this.ctx.eventEngine.getEventByTrack(track) : isEventGuard(payload) ? payload : undefined;
         switch (tpl) {
             case 'start':
-                text = event?.notify?.['start']?.(this.ctx, track) ?? `Новое событие: ${event?.title ?? 'нет описания'}`;
+                text = (track && event?.notify?.['start']?.(this.ctx, track)) ?? `Новое событие: ${event?.title ?? 'нет описания'}`;
                 break;
             case 'end':
-                text = event?.notify?.['end']?.(this.ctx, track) ?? `Событие ${event?.title} завершено`
+                text = (track && event?.notify?.['end']?.(this.ctx, track)) ?? `Событие ${event?.title} завершено`
         }
 
         this.modes.forEach(mode => {
