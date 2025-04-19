@@ -7,6 +7,5 @@ export interface Faction {
     region: RegionsType;
     military: boolean;
     terror: boolean;
-    neighbours: FactionType[];
 }
 

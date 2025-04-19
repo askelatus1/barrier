@@ -243,7 +243,7 @@ export const stepEvent: Step[] = [
         actorRule: ['civilian'],
         territoryRule: 'both',
         military: false,
-        final: true,
+        final: false,
         timeout: 1000,
     },
     {
@@ -253,8 +253,29 @@ export const stepEvent: Step[] = [
         actorRule: ['civilian'],
         territoryRule: 'both',
         military: false,
+        final: false,
+        timeout: 1000,
+    },
+    {
+        id: 'resolve',
+        type:'step',
+        title: '',
+        actorRule: [],
+        territoryRule: 'both',
+        military: true,
         final: true,
         timeout: 1000,
     },
+
+    {
+        id: 'raject',
+        type:'step',
+        title: '',
+        actorRule: [],
+        territoryRule: 'both',
+        military: true,
+        final: true,
+        timeout: 1000,
+    }
 ]
 
