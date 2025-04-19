@@ -61,8 +61,9 @@ export class BarrierTracker {
         this.ctx.notifier.notify(newStep);
 
         if (newStep.final) {
+            const notifyType: 'resolve' | 'reject' = newStep.id === 'resolve' ? 'resolve' : 'reject';
             console.log('track ending: ', track.id);
-            this.ctx.notifier.notify(track, 'end');
+            this.ctx.notifier.notify(track, notifyType);
             this.#removeTrack(track);
         } else  {
             setTimeout(() => this.#handleTrackStep(track), newStep.timeout)

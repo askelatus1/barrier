@@ -5,96 +5,84 @@ export const regionMap: Region[] = [
         id: 'moldavka',
         title: 'молдавка',
         status: 'peace',
-        neighbour: ['Piter' , 'center' , 'miltown' , 'varlamono'],
-        civil: true
+        neighbour: ['Piter' , 'center' , 'miltown' , 'varlamono']
     },
 
     {
         id: 'decabristov',
         title: 'декабристов',
         status: 'peace',
-        neighbour: ['center' , 'krista' , 'miltown'],
-        civil: true
+        neighbour: ['center' , 'krista' , 'miltown']
     },
 
     {
         id: 'obrazcovo',
         title: 'Образцовская',
         status: 'peace',
-        neighbour: ['rudnik' , 'mongora'],
-        civil: true
+        neighbour: ['rudnik' , 'mongora']
     },
 
     {
         id: 'mongora',
         title: 'монгора',
         status: 'peace',
-        neighbour: ['Piter' , 'cerdavino' , 'obrazcovo' , 'center'],
-        civil: true
+        neighbour: ['Piter' , 'cerdavino' , 'obrazcovo' , 'center']
     },
 
     {
         id: 'shanghai',
         title: 'шанхай',
         status: 'peace',
-        neighbour: ['miltown' , 'krista'],
-        civil: true
+        neighbour: ['miltown' , 'krista']
     },
 
     {
         id: 'cerdavino',
         title: 'сердавино',
         status: 'wreckage',
-        neighbour: ['mongora' , 'Piter' , 'varlamono'],
-        civil: false
+        neighbour: ['mongora' , 'Piter' , 'varlamono']
     },
 
     {
         id: 'varlamono',
         title: 'варламово',
         status: 'peace',
-        neighbour: ['cerdavino' , 'Piter' , 'moldavka'],
-        civil: true
+        neighbour: ['cerdavino' , 'Piter' , 'moldavka']
     },
 
     {
         id: 'rudnik',
         title: 'рудник',
         status: 'peace',
-        neighbour: ['obrazcovo'],
-        civil: true
+        neighbour: ['obrazcovo']
     },
 
     {
         id: 'krista',
         title: 'криста',
         status: 'peace',
-        neighbour: ['decabristov' , 'miltown' , 'shanghai'],
-        civil: true
+        neighbour: ['decabristov' , 'miltown' , 'shanghai']
     },
 
     {
         id: 'center',
         title: 'центр',
         status: 'peace',
-        neighbour: ['moldavka' , 'miltown' , 'Piter' , 'decabristov' , 'mongora'],
-        civil: true
+        neighbour: ['moldavka' , 'miltown' , 'Piter' , 'decabristov' , 'mongora']
     },
 
     {
         id: 'miltown',
         title: 'военный городок',
         status: 'peace',
-        neighbour: ['shanghai' , 'center' , 'moldavka' , 'krista' , 'decabristov'],
-        civil: true
+        neighbour: ['shanghai' , 'center' , 'moldavka' , 'krista' , 'decabristov']
     },
 
     {
         id: 'Piter',
         title: 'питер',
         status: 'peace',
-        neighbour: ['center' , 'moldavka' , 'mongora' , 'cerdavino' , 'varlamono'],
-        civil: true
+        neighbour: ['center' , 'moldavka' , 'mongora' , 'cerdavino' , 'varlamono']
     }
 ] as const;
 

@@ -268,7 +268,7 @@ export const stepEvent: Step[] = [
     },
 
     {
-        id: 'raject',
+        id: 'reject',
         type:'step',
         title: '',
         actorRule: [],
