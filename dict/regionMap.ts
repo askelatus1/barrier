@@ -7,7 +7,7 @@ export const regionMap: Region[] = [
         title: 'молдавка',
         status: RegionStatus.PEACE,
         neighbour: ['Piter' , 'center' , 'miltown' , 'varlamono'],
-        faction: []
+        faction: null
     },
 
     {
@@ -15,7 +15,7 @@ export const regionMap: Region[] = [
         title: 'декабристов',
         status: RegionStatus.PEACE,
         neighbour: ['center' , 'krista' , 'miltown'],
-        faction: []
+        faction: null
     },
 
     {
@@ -23,7 +23,7 @@ export const regionMap: Region[] = [
         title: 'Образцовская',
         status: RegionStatus.PEACE,
         neighbour: ['rudnik' , 'mongora'],
-        faction: []
+        faction: null
     },
 
     {
@@ -31,7 +31,7 @@ export const regionMap: Region[] = [
         title: 'монгора',
         status: RegionStatus.PEACE,
         neighbour: ['Piter' , 'cerdavino' , 'obrazcovo' , 'center'],
-        faction: []
+        faction: null
     },
 
     {
@@ -39,7 +39,7 @@ export const regionMap: Region[] = [
         title: 'шанхай',
         status: RegionStatus.PEACE,
         neighbour: ['miltown' , 'krista'],
-        faction: []
+        faction: null
     },
 
     {
@@ -47,7 +47,7 @@ export const regionMap: Region[] = [
         title: 'сердавино',
         status: RegionStatus.WRECKAGE,
         neighbour: ['mongora' , 'Piter' , 'varlamono'],
-        faction: []
+        faction: null
     },
 
     {
@@ -55,7 +55,7 @@ export const regionMap: Region[] = [
         title: 'варламово',
         status: RegionStatus.PEACE,
         neighbour: ['cerdavino' , 'Piter' , 'moldavka'],
-        faction: []
+        faction: null
     },
 
     {
@@ -63,7 +63,7 @@ export const regionMap: Region[] = [
         title: 'рудник',
         status: RegionStatus.PEACE,
         neighbour: ['obrazcovo'],
-        faction: []
+        faction: null
     },
 
     {
@@ -71,7 +71,7 @@ export const regionMap: Region[] = [
         title: 'криста',
         status: RegionStatus.PEACE,
         neighbour: ['decabristov' , 'miltown' , 'shanghai'],
-        faction: []
+        faction: null
     },
 
     {
@@ -79,7 +79,7 @@ export const regionMap: Region[] = [
         title: 'центр',
         status: RegionStatus.PEACE,
         neighbour: ['moldavka' , 'miltown' , 'Piter' , 'decabristov' , 'mongora'],
-        faction: []
+        faction: null
     },
 
     {
@@ -87,7 +87,7 @@ export const regionMap: Region[] = [
         title: 'военный городок',
         status: RegionStatus.PEACE,
         neighbour: ['shanghai' , 'center' , 'moldavka' , 'krista' , 'decabristov'],
-        faction: []
+        faction: null
     },
 
     {
@@ -95,7 +95,7 @@ export const regionMap: Region[] = [
         title: 'питер',
         status: RegionStatus.PEACE,
         neighbour: ['center' , 'moldavka' , 'mongora' , 'cerdavino' , 'varlamono'],
-        faction: []
+        faction: null
     }
 ] as const;
 

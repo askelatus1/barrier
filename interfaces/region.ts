@@ -7,5 +7,5 @@ export interface Region {
     title: string;
     status: RegionStatus;
     neighbour: RegionsType[],
-    faction: Faction[]
+    faction: (Faction & { military: true }) | null
 }
