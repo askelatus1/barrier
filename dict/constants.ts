@@ -5,7 +5,8 @@ export enum EventType {
 
 export enum ActorType {
     MILITARY = 'military',
-    CIVILIAN = 'civilian'
+    CIVILIAN = 'civilian',
+    TERRORIST = 'terrorist'
 }
 
 export enum TerritoryRuleType {
