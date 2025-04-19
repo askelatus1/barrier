@@ -1,14 +1,12 @@
 import {NotifyTemplate} from "./notify";
+import {EventType, ActorType, TerritoryRuleType} from "../dict/constants";
 
 export interface BarrierEvent {
     id: string;
-    type: BarrierEventType;
+    type: EventType;
     title: string;
     actorRule: ActorType[];
     territoryRule: TerritoryRuleType;
     military: boolean;
-    notify?: NotifyTemplate
+    notify?: NotifyTemplate;
 }
-export type ActorType = 'military' | 'civilian';
-export type BarrierEventType = 'step' | 'event' ;
-export type TerritoryRuleType = 'initiator' |  'victim' | 'both';

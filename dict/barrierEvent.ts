@@ -1,13 +1,13 @@
-import {BarrierContext, BarrierEvent, Faction, Step} from "../interfaces";
-import {EnhancedTrack} from "../apps/domain";
+import {BarrierContext, BarrierEvent, Faction, Step, EnhancedTrack} from "../interfaces";
+import {EventType, ActorType, TerritoryRuleType} from "./constants";
 
 export const barrierEvent: BarrierEvent[] = [
     {
         id: 'infantry',
         title: 'атака на пехоту',
-        type: 'event',
-        actorRule: ['military', 'military'],
-        territoryRule: 'both',
+        type: EventType.EVENT,
+        actorRule: [ActorType.MILITARY, ActorType.MILITARY],
+        territoryRule: TerritoryRuleType.BOTH,
         military: true,
         notify: {
             start: (ctx: BarrierContext,  track: EnhancedTrack) => {
@@ -31,9 +31,9 @@ export const barrierEvent: BarrierEvent[] = [
     {
         id: 'HTV',
         title: 'ликвидация офицера',
-        type: 'event',
-        actorRule: ['military', 'military'],
-        territoryRule: 'both',
+        type: EventType.EVENT,
+        actorRule: [ActorType.MILITARY, ActorType.MILITARY],
+        territoryRule: TerritoryRuleType.BOTH,
         military: true,
         notify: {
             start: (ctx: BarrierContext,  track: EnhancedTrack) => {
@@ -57,9 +57,9 @@ export const barrierEvent: BarrierEvent[] = [
     {
         id: 'vehicle',
         title: 'атака на технику',
-        type: 'event',
-        actorRule: ['military', 'military'],
-        territoryRule: 'both',
+        type: EventType.EVENT,
+        actorRule: [ActorType.MILITARY, ActorType.MILITARY],
+        territoryRule: TerritoryRuleType.BOTH,
         military: true,
         notify: {
             start: (ctx: BarrierContext,  track: EnhancedTrack) => {
@@ -80,13 +80,12 @@ export const barrierEvent: BarrierEvent[] = [
         }
     },
 
-
     {
         id: 'drone',
         title: 'атака дроном-камикадзе',
-        type: 'event',
-        actorRule: ['military', 'military'],
-        territoryRule: 'victim',
+        type: EventType.EVENT,
+        actorRule: [ActorType.MILITARY, ActorType.MILITARY],
+        territoryRule: TerritoryRuleType.VICTIM,
         military: true,
         notify: {
             start: (ctx: BarrierContext,  track: EnhancedTrack) => {
@@ -110,9 +109,9 @@ export const barrierEvent: BarrierEvent[] = [
     {
         id: 'detonation',
         title: 'подрыв оружейного склада',
-        type: 'event',
-        actorRule: ['military', 'military'],
-        territoryRule: 'victim',
+        type: EventType.EVENT,
+        actorRule: [ActorType.MILITARY, ActorType.MILITARY],
+        territoryRule: TerritoryRuleType.VICTIM,
         military: true,
         notify: {
             start: (ctx: BarrierContext,  track: EnhancedTrack) => {
@@ -136,9 +135,9 @@ export const barrierEvent: BarrierEvent[] = [
     {
         id: 'trade',
         title: 'установление торговых отношений',
-        type: 'event',
-        actorRule: ['civilian', 'civilian'],
-        territoryRule: 'both',
+        type: EventType.EVENT,
+        actorRule: [ActorType.CIVILIAN, ActorType.CIVILIAN],
+        territoryRule: TerritoryRuleType.BOTH,
         military: false,
         notify: {
             start: (ctx: BarrierContext,  track: EnhancedTrack) => {
@@ -158,121 +157,118 @@ export const barrierEvent: BarrierEvent[] = [
     {
         id: 'artillery',
         title: 'работают артилерией по позициям',
-        type: 'event',
-        actorRule: ['military', 'military'],
-        territoryRule: 'both',
+        type: EventType.EVENT,
+        actorRule: [ActorType.MILITARY, ActorType.MILITARY],
+        territoryRule: TerritoryRuleType.BOTH,
         military: true,
     },
 
     {
         id: 'scientific',
         title: 'наладили научные отношения',
-        type: 'event',
-        actorRule: ['military', 'military'],
-        territoryRule: 'both',
+        type: EventType.EVENT,
+        actorRule: [ActorType.MILITARY, ActorType.MILITARY],
+        territoryRule: TerritoryRuleType.BOTH,
         military: false,
     },
 
     {
         id: 'humanitarian',
         title: 'проводят гумунитарную помощь',
-        type: 'event',
-        actorRule: ['military', 'civilian'],
-        territoryRule: 'both',
+        type: EventType.EVENT,
+        actorRule: [ActorType.MILITARY, ActorType.CIVILIAN],
+        territoryRule: TerritoryRuleType.BOTH,
         military: false,
     },
-
-
 ]
 
 export const stepEvent: Step[] = [
     {
         id: 'attack',
-        type: 'step',
+        type: EventType.STEP,
         title: 'наступают на',
-        actorRule: ['military', 'military'],
-        territoryRule: 'both',
+        actorRule: [ActorType.MILITARY, ActorType.MILITARY],
+        territoryRule: TerritoryRuleType.BOTH,
         military: true,
         final: false,
         timeout: 1000,
     },
     {
         id: 'negotiation',
-        type: 'step',
+        type: EventType.STEP,
         title: 'начали перероворы с',
-        actorRule: ['military', 'military'],
-        territoryRule: 'both',
+        actorRule: [ActorType.MILITARY, ActorType.MILITARY],
+        territoryRule: TerritoryRuleType.BOTH,
         military: true,
         final: false,
         timeout: 1000,
     },
     {
         id: 'capture',
-        type: 'step',
+        type: EventType.STEP,
         title: 'захватили территорию',
-        actorRule: ['military', 'military'],
-        territoryRule: 'both',
+        actorRule: [ActorType.MILITARY, ActorType.MILITARY],
+        territoryRule: TerritoryRuleType.BOTH,
         military: true,
         final: false,
         timeout: 1000,
     },
     {
         id: 'peace',
-        type: 'step',
+        type: EventType.STEP,
         title: 'заключиои мир с',
-        actorRule: ['military', 'military'],
-        territoryRule: 'both',
+        actorRule: [ActorType.MILITARY, ActorType.MILITARY],
+        territoryRule: TerritoryRuleType.BOTH,
         military: false,
         final: false,
         timeout: 1000,
     },
     {
         id: 'negotiation',
-        type: 'step',
+        type: EventType.STEP,
         title: 'переговоры сорваны. Бои продолжаются',
-        actorRule: ['military', 'military'],
-        territoryRule: 'both',
+        actorRule: [ActorType.MILITARY, ActorType.MILITARY],
+        territoryRule: TerritoryRuleType.BOTH,
         military: false,
         final: false,
         timeout: 1000,
     },
     {
         id: 'cleaningСompleted',
-        type:'step',
+        type: EventType.STEP,
         title: 'очистка обломков успешно звершена',
-        actorRule: ['civilian'],
-        territoryRule: 'both',
+        actorRule: [ActorType.CIVILIAN],
+        territoryRule: TerritoryRuleType.BOTH,
         military: false,
         final: false,
         timeout: 1000,
     },
     {
         id: 'wreckage',
-        type:'step',
+        type: EventType.STEP,
         title: 'проводят очистку района от обломков',
-        actorRule: ['civilian'],
-        territoryRule: 'both',
+        actorRule: [ActorType.CIVILIAN],
+        territoryRule: TerritoryRuleType.BOTH,
         military: false,
         final: false,
         timeout: 1000,
     },
     {
         id: 'resolve',
-        type:'step',
+        type: EventType.STEP,
         title: '',
         actorRule: [],
-        territoryRule: 'both',
+        territoryRule: TerritoryRuleType.BOTH,
         military: true,
         final: true,
         timeout: 1000,
     },
-
     {
         id: 'reject',
-        type:'step',
+        type: EventType.STEP,
         title: '',
         actorRule: [],
-        territoryRule: 'both',
+        territoryRule: TerritoryRuleType.BOTH,
         military: true,
         final: true,
         timeout: 1000,

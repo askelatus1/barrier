@@ -1,4 +1,5 @@
 import {RegionsType} from "../dict/regionMap";
+import {Status} from "../dict/constants";
 
 export interface Region {
     id: RegionsType;
@@ -6,5 +7,3 @@ export interface Region {
     status: Status;
     neighbour: RegionsType[]
 }
-
-export type Status = 'war' | 'wreckage' | 'peace';
