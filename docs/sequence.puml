@@ -1,0 +1,48 @@
+@startuml
+skinparam sequence {
+    ArrowColor #000000
+    ActorBorderColor #000000
+    LifeLineBorderColor #000000
+    ParticipantBorderColor #000000
+    ParticipantBackgroundColor LightBlue
+}
+
+actor User
+participant "BarrierContext" as BC
+participant "BarrierEvent" as BE
+participant "EnhancedTrack" as ET
+participant "Faction" as F
+participant "Territory" as T
+participant "NotifyTemplate" as NT
+
+User -> BC: initialize game
+activate BC
+BC -> F: create factions
+BC -> T: create territories
+deactivate BC
+
+User -> BC: start event
+activate BC
+BC -> BE: validate event
+BE -> F: check actor rules
+BE -> T: check territory rules
+BE -> ET: create track
+ET -> NT: prepare notifications
+BC <-- BE: event validated
+deactivate BC
+
+User -> BC: execute event
+activate BC
+BC -> ET: process event
+ET -> NT: send start notification
+ET -> F: update faction state
+ET -> T: update territory state
+alt success
+    ET -> NT: send resolve notification
+else failure
+    ET -> NT: send reject notification
+end
+BC <-- ET: event completed
+deactivate BC
+
+@enduml 

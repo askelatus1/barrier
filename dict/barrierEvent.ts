@@ -1,4 +1,4 @@
-import {BarrierContext, BarrierEvent, Faction, Step, EnhancedTrack} from "../interfaces";
+import {BarrierContext, BarrierEvent, Faction, Step, EnhancedTrack, ActionType} from "../interfaces";
 import {EventType, ActorType, TerritoryRuleType} from "./constants";
 
 export const barrierEvent: BarrierEvent[] = [
@@ -6,6 +6,7 @@ export const barrierEvent: BarrierEvent[] = [
         id: 'infantry',
         title: 'атака на пехоту',
         type: EventType.EVENT,
+        actionType: ActionType.WAR,
         actorRule: [ActorType.MILITARY, ActorType.MILITARY],
         territoryRule: TerritoryRuleType.BOTH,
         military: true,
@@ -32,6 +33,7 @@ export const barrierEvent: BarrierEvent[] = [
         id: 'HTV',
         title: 'ликвидация офицера',
         type: EventType.EVENT,
+        actionType: ActionType.WAR,
         actorRule: [ActorType.MILITARY, ActorType.MILITARY],
         territoryRule: TerritoryRuleType.BOTH,
         military: true,
@@ -58,6 +60,7 @@ export const barrierEvent: BarrierEvent[] = [
         id: 'vehicle',
         title: 'атака на технику',
         type: EventType.EVENT,
+        actionType: ActionType.WAR,
         actorRule: [ActorType.MILITARY, ActorType.MILITARY],
         territoryRule: TerritoryRuleType.BOTH,
         military: true,
@@ -84,6 +87,7 @@ export const barrierEvent: BarrierEvent[] = [
         id: 'drone',
         title: 'атака дроном-камикадзе',
         type: EventType.EVENT,
+        actionType: ActionType.WAR,
         actorRule: [ActorType.MILITARY, ActorType.MILITARY],
         territoryRule: TerritoryRuleType.VICTIM,
         military: true,
@@ -110,6 +114,7 @@ export const barrierEvent: BarrierEvent[] = [
         id: 'detonation',
         title: 'подрыв оружейного склада',
         type: EventType.EVENT,
+        actionType: ActionType.WAR,
         actorRule: [ActorType.MILITARY, ActorType.MILITARY],
         territoryRule: TerritoryRuleType.VICTIM,
         military: true,
@@ -136,6 +141,7 @@ export const barrierEvent: BarrierEvent[] = [
         id: 'trade',
         title: 'установление торговых отношений',
         type: EventType.EVENT,
+        actionType: ActionType.PEACE,
         actorRule: [ActorType.CIVILIAN, ActorType.CIVILIAN],
         territoryRule: TerritoryRuleType.BOTH,
         military: false,
@@ -158,6 +164,7 @@ export const barrierEvent: BarrierEvent[] = [
         id: 'artillery',
         title: 'работают артилерией по позициям',
         type: EventType.EVENT,
+        actionType: ActionType.WAR,
         actorRule: [ActorType.MILITARY, ActorType.MILITARY],
         territoryRule: TerritoryRuleType.BOTH,
         military: true,
@@ -184,6 +191,7 @@ export const barrierEvent: BarrierEvent[] = [
         id: 'scientific',
         title: 'наладили научные отношения',
         type: EventType.EVENT,
+        actionType: ActionType.PEACE,
         actorRule: [ActorType.MILITARY, ActorType.MILITARY],
         territoryRule: TerritoryRuleType.BOTH,
         military: false,
@@ -207,6 +215,7 @@ export const barrierEvent: BarrierEvent[] = [
         id: 'humanitarian',
         title: 'проводят гумунитарную помощь',
         type: EventType.EVENT,
+        actionType: ActionType.PEACE,
         actorRule: [ActorType.MILITARY, ActorType.CIVILIAN],
         territoryRule: TerritoryRuleType.BOTH,
         military: false,
@@ -231,6 +240,7 @@ export const stepEvent: Step[] = [
     {
         id: 'attack',
         type: EventType.STEP,
+        actionType: ActionType.WAR,
         title: 'наступают на',
         actorRule: [ActorType.MILITARY, ActorType.MILITARY],
         territoryRule: TerritoryRuleType.BOTH,
@@ -241,6 +251,7 @@ export const stepEvent: Step[] = [
     {
         id: 'negotiation',
         type: EventType.STEP,
+        actionType: ActionType.PEACE,
         title: 'начали перероворы с',
         actorRule: [ActorType.MILITARY, ActorType.MILITARY],
         territoryRule: TerritoryRuleType.BOTH,
@@ -251,6 +262,7 @@ export const stepEvent: Step[] = [
     {
         id: 'capture',
         type: EventType.STEP,
+        actionType: ActionType.CAPTURE,
         title: 'захватили территорию',
         actorRule: [ActorType.MILITARY, ActorType.MILITARY],
         territoryRule: TerritoryRuleType.BOTH,
@@ -261,16 +273,18 @@ export const stepEvent: Step[] = [
     {
         id: 'peace',
         type: EventType.STEP,
+        actionType: ActionType.PEACE,
         title: 'заключиои мир с',
         actorRule: [ActorType.MILITARY, ActorType.MILITARY],
         territoryRule: TerritoryRuleType.BOTH,
         military: false,
-        final: false,
+        final: true,
         timeout: 1000,
     },
     {
         id: 'negotiation',
         type: EventType.STEP,
+        actionType: ActionType.WAR,
         title: 'переговоры сорваны. Бои продолжаются',
         actorRule: [ActorType.MILITARY, ActorType.MILITARY],
         territoryRule: TerritoryRuleType.BOTH,
@@ -278,29 +292,11 @@ export const stepEvent: Step[] = [
         final: false,
         timeout: 1000,
     },
-    {
-        id: 'cleaningСompleted',
-        type: EventType.STEP,
-        title: 'очистка обломков успешно звершена',
-        actorRule: [ActorType.CIVILIAN],
-        territoryRule: TerritoryRuleType.BOTH,
-        military: false,
-        final: false,
-        timeout: 1000,
-    },
-    {
-        id: 'wreckage',
-        type: EventType.STEP,
-        title: 'проводят очистку района от обломков',
-        actorRule: [ActorType.CIVILIAN],
-        territoryRule: TerritoryRuleType.BOTH,
-        military: false,
-        final: false,
-        timeout: 1000,
-    },
+
     {
         id: 'resolve',
         type: EventType.STEP,
+        actionType: ActionType.PEACE,
         title: '',
         actorRule: [],
         territoryRule: TerritoryRuleType.BOTH,
@@ -311,6 +307,7 @@ export const stepEvent: Step[] = [
     {
         id: 'reject',
         type: EventType.STEP,
+        actionType: ActionType.WAR,
         title: '',
         actorRule: [],
         territoryRule: TerritoryRuleType.BOTH,
@@ -320,3 +317,31 @@ export const stepEvent: Step[] = [
     }
 ]
 
+export const capturebase: BarrierEvent[] = [
+    {
+        id: 'capturebase',
+        type: EventType.EVENT,
+        actionType: ActionType.CAPTURE,
+        title: 'захватили базу',
+        actorRule: [ActorType.MILITARY, ActorType.MILITARY],
+        territoryRule: TerritoryRuleType.BOTH,
+        military: true,
+        notify: {
+            start: (ctx: BarrierContext,  track: EnhancedTrack) => {
+                const [init, victim]: Faction[] = track.actors;
+                const territory = track.territory;
+                return `Сторона ${init.name} начала атаку на базу противника (${victim.name}) в секторе ${territory.title}`
+            },
+            resolve: (ctx: BarrierContext,  track: EnhancedTrack) => {  
+                const [init, victim]: Faction[] = track.actors;
+                const territory = track.territory;
+                return `Сторона ${init.name} взяли базу (${victim.name}) в кольцо в секторе ${territory.title}`
+            },
+            reject: (ctx: BarrierContext,  track: EnhancedTrack) => {
+                const [init, victim]: Faction[] = track.actors;
+                const territory = track.territory;
+                return `Сторона ${init.name} не смогла захватить базу (${victim.name}) в секторе ${territory.title}`
+            },
+        }
+    }
+]
