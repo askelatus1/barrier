@@ -24,8 +24,8 @@ export class BarrierTracker {
      * @param firstActor Первый актор, относительно которого ищутся соседи
      * @returns Массив акторов из соседних регионов
      */
-    private getNeighbourActors(rule: ActorType, firstActor: {region: string}): typeof faction[number][] {
-        const cacheKey = `${rule}-${firstActor.region}`;
+    private getNeighbourActors(rule: ActorType, firstActor: {baseRegion: string}): typeof faction[number][] {
+        const cacheKey = `${rule}-${firstActor.baseRegion}`;
         if (this.cache.has(cacheKey)) {
             return this.cache.get(cacheKey)!;
         }
@@ -34,14 +34,14 @@ export class BarrierTracker {
         const civilian = getCivilian(faction);
         const actors = rule === ActorType.MILITARY ? military : civilian;
         
-        const region = regionMap.find(r => r.id === firstActor.region);
+        const region = regionMap.find(r => r.id === firstActor.baseRegion);
         if (!region) {
-            console.warn(`Region ${firstActor.region} not found`);
+            console.warn(`Region ${firstActor.baseRegion} not found`);
             return [];
         }
 
         const validNeighbours = region.neighbour;
-        const result = actors.filter(actor => validNeighbours.includes(actor.region as any));
+        const result = actors.filter(actor => validNeighbours.includes(actor.baseRegion as any));
         
         this.cache.set(cacheKey, result);
         return result;
@@ -82,7 +82,7 @@ export class BarrierTracker {
                 id: crypto.randomUUID(),
                 eventId: event.id,
                 timeout: BarrierRandom.getRandomInt(this.timeoutRange),
-                territory: getTerritoryByRule(actors.map(a => a.region), event.territoryRule),
+                territory: getTerritoryByRule(actors.map(a => a.baseRegion), event.territoryRule),
                 actors
             };
 

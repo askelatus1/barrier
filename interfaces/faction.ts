@@ -4,7 +4,7 @@ import {FactionType} from "../dict/factions";
 export interface Faction {
     id: string;
     name: string;
-    region: RegionsType;
+    baseRegion: RegionsType;
     military: boolean;
     terror: boolean;
 }

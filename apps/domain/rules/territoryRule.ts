@@ -4,7 +4,7 @@ import {BarrierRandom} from "../random";
 import {TerritoryRuleType} from "../../../dict/constants";
 
 export function getRegionByFaction(faction: Faction): Region {
-    return regionMap.find(t => t.id === faction.region) satisfies Region;
+    return regionMap.find(t => t.id === faction.baseRegion) satisfies Region;
 }
 
 export function getRegionById(regionId: RegionsType): Region {
