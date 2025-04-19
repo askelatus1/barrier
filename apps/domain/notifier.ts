@@ -17,8 +17,11 @@ export class Notifier {
             case 'start':
                 text = (track && event?.notify?.['start']?.(this.ctx, track)) ?? `Новое событие: ${event?.title ?? 'нет описания'}`;
                 break;
-            case 'end':
-                text = (track && event?.notify?.['end']?.(this.ctx, track)) ?? `Событие ${event?.title} завершено`
+            case 'resolve':
+                text = (track && event?.notify?.['resolve']?.(this.ctx, track)) ?? `Событие ${event?.title} завершено`
+                break;
+            case 'reject':
+                text = (track && event?.notify?.['reject']?.(this.ctx, track)) ?? `Событие ${event?.title} провалено`
         }
 
         this.modes.forEach(mode => {
