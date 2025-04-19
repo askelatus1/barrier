@@ -161,6 +161,23 @@ export const barrierEvent: BarrierEvent[] = [
         actorRule: [ActorType.MILITARY, ActorType.MILITARY],
         territoryRule: TerritoryRuleType.BOTH,
         military: true,
+        notify: {
+            start: (ctx: BarrierContext,  track: EnhancedTrack) => {
+                const [init, victim]: Faction[] = track.actors;
+                const territory = track.territory;
+                return `Сторона ${init.name} начала артиллерийский обстрел позиций противника (${victim.name}) в секторе ${territory.title}`
+            },
+            resolve: (ctx: BarrierContext,  track: EnhancedTrack) => {
+                const [init, victim]: Faction[] = track.actors;
+                const territory = track.territory;
+                return `Артиллерийский обстрел стороны ${init.name} успешно поразил цели противника (${victim.name}) в секторе ${territory.title}`
+            },
+            reject: (ctx: BarrierContext,  track: EnhancedTrack) => {
+                const [init, victim]: Faction[] = track.actors;
+                const territory = track.territory;
+                return `Артиллерийский обстрел стороны ${init.name} не смог поразить цели противника (${victim.name}) в секторе ${territory.title}`
+            },
+        }
     },
 
     {
@@ -170,6 +187,20 @@ export const barrierEvent: BarrierEvent[] = [
         actorRule: [ActorType.MILITARY, ActorType.MILITARY],
         territoryRule: TerritoryRuleType.BOTH,
         military: false,
+        notify: {
+            start: (ctx: BarrierContext,  track: EnhancedTrack) => {
+                const [init, victim]: Faction[] = track.actors;
+                return `Сторона ${init.name} начала переговоры о научном сотрудничестве с (${victim.name})`
+            },
+            resolve: (ctx: BarrierContext,  track: EnhancedTrack) => {
+                const [init, victim]: Faction[] = track.actors;
+                return `Сторона ${init.name} успешно наладила научное сотрудничество с (${victim.name})`
+            },
+            reject: (ctx: BarrierContext,  track: EnhancedTrack) => {
+                const [init, victim]: Faction[] = track.actors;
+                return `Сторона ${init.name} не смогла договориться о научном сотрудничестве с (${victim.name})`
+            },
+        }
     },
 
     {
@@ -179,6 +210,20 @@ export const barrierEvent: BarrierEvent[] = [
         actorRule: [ActorType.MILITARY, ActorType.CIVILIAN],
         territoryRule: TerritoryRuleType.BOTH,
         military: false,
+        notify: {
+            start: (ctx: BarrierContext,  track: EnhancedTrack) => {
+                const [init, victim]: Faction[] = track.actors;
+                return `Сторона ${init.name} начала доставку гуманитарной помощи для (${victim.name})`
+            },
+            resolve: (ctx: BarrierContext,  track: EnhancedTrack) => {
+                const [init, victim]: Faction[] = track.actors;
+                return `Сторона ${init.name} успешно доставила гуманитарную помощь для (${victim.name})`
+            },
+            reject: (ctx: BarrierContext,  track: EnhancedTrack) => {
+                const [init, victim]: Faction[] = track.actors;
+                return `Сторона ${init.name} не смогла доставить гуманитарную помощь для (${victim.name})`
+            },
+        }
     },
 ]
 
