@@ -5,7 +5,7 @@ import {regionMap} from "../../dict/regionMap";
 import {getCivilian, getMilitary} from "./rules/actorRules";
 import {getTerritoryByRule} from "./rules/territoryRule";
 import {BarrierRandom} from "./random";
-import {TIMEOUTS, EventType} from "../../dict/constants";
+import {TIMEOUTS, EventType, ActorType} from "../../dict/constants";
 
 /**
  * Трекер событий игры. Отслеживает и управляет жизненным циклом событий.
@@ -24,7 +24,7 @@ export class BarrierTracker {
      * @param firstActor Первый актор, относительно которого ищутся соседи
      * @returns Массив акторов из соседних регионов
      */
-    private getNeighbourActors(rule: 'military' | 'civilian', firstActor: {region: string}): typeof faction[number][] {
+    private getNeighbourActors(rule: ActorType, firstActor: {region: string}): typeof faction[number][] {
         const cacheKey = `${rule}-${firstActor.region}`;
         if (this.cache.has(cacheKey)) {
             return this.cache.get(cacheKey)!;
@@ -32,7 +32,7 @@ export class BarrierTracker {
 
         const military = getMilitary(faction);
         const civilian = getCivilian(faction);
-        const actors = rule === 'military' ? military : civilian;
+        const actors = rule === ActorType.MILITARY ? military : civilian;
         
         const region = regionMap.find(r => r.id === firstActor.region);
         if (!region) {
