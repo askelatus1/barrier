@@ -4,7 +4,7 @@ export const faction: Faction[] = [
     {
         id: 'monolith',
         name: 'ЧВК "монолит"',
-        region: 'moldavka',
+        region: 'center',
         military: true,
         terror: false,
     },
@@ -18,7 +18,7 @@ export const faction: Faction[] = [
     {
         id: 'skyline',
         name: 'Скайлайн',
-        region:'obrazcovo',
+        region:'Piter',
         military: true,
         terror: false,
     },
@@ -29,8 +29,8 @@ export type FactionType = 'monolith' | 'sin' | 'skyline';
 import {Region} from "../interfaces";
 
 export const factionRegionMap: Record<FactionType, Region['id']> = {
-    'monolith': 'moldavka',
+    'monolith': 'center',
     'sin': 'decabristov',
-    'skyline': 'obrazcovo'
+    'skyline': 'Piter'
 };
 
