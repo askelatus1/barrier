@@ -14,7 +14,7 @@ export enum TerritoryRuleType {
     BOTH = 'both'
 }
 
-export enum Status {
+export enum RegionStatus {
     WAR = 'war',
     WRECKAGE = 'wreckage',
     PEACE = 'peace'
