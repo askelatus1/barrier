@@ -6,84 +6,96 @@ export const regionMap: Region[] = [
         id: 'moldavka',
         title: 'молдавка',
         status: RegionStatus.PEACE,
-        neighbour: ['Piter' , 'center' , 'miltown' , 'varlamono']
+        neighbour: ['Piter' , 'center' , 'miltown' , 'varlamono'],
+        faction: []
     },
 
     {
         id: 'decabristov',
         title: 'декабристов',
         status: RegionStatus.PEACE,
-        neighbour: ['center' , 'krista' , 'miltown']
+        neighbour: ['center' , 'krista' , 'miltown'],
+        faction: []
     },
 
     {
         id: 'obrazcovo',
         title: 'Образцовская',
         status: RegionStatus.PEACE,
-        neighbour: ['rudnik' , 'mongora']
+        neighbour: ['rudnik' , 'mongora'],
+        faction: []
     },
 
     {
         id: 'mongora',
         title: 'монгора',
         status: RegionStatus.PEACE,
-        neighbour: ['Piter' , 'cerdavino' , 'obrazcovo' , 'center']
+        neighbour: ['Piter' , 'cerdavino' , 'obrazcovo' , 'center'],
+        faction: []
     },
 
     {
         id: 'shanghai',
         title: 'шанхай',
         status: RegionStatus.PEACE,
-        neighbour: ['miltown' , 'krista']
+        neighbour: ['miltown' , 'krista'],
+        faction: []
     },
 
     {
         id: 'cerdavino',
         title: 'сердавино',
         status: RegionStatus.WRECKAGE,
-        neighbour: ['mongora' , 'Piter' , 'varlamono']
+        neighbour: ['mongora' , 'Piter' , 'varlamono'],
+        faction: []
     },
 
     {
         id: 'varlamono',
         title: 'варламово',
         status: RegionStatus.PEACE,
-        neighbour: ['cerdavino' , 'Piter' , 'moldavka']
+        neighbour: ['cerdavino' , 'Piter' , 'moldavka'],
+        faction: []
     },
 
     {
         id: 'rudnik',
         title: 'рудник',
         status: RegionStatus.PEACE,
-        neighbour: ['obrazcovo']
+        neighbour: ['obrazcovo'],
+        faction: []
     },
 
     {
         id: 'krista',
         title: 'криста',
         status: RegionStatus.PEACE,
-        neighbour: ['decabristov' , 'miltown' , 'shanghai']
+        neighbour: ['decabristov' , 'miltown' , 'shanghai'],
+        faction: []
     },
 
     {
         id: 'center',
         title: 'центр',
         status: RegionStatus.PEACE,
-        neighbour: ['moldavka' , 'miltown' , 'Piter' , 'decabristov' , 'mongora']
+        neighbour: ['moldavka' , 'miltown' , 'Piter' , 'decabristov' , 'mongora'],
+        faction: []
     },
 
     {
         id: 'miltown',
         title: 'военный городок',
         status: RegionStatus.PEACE,
-        neighbour: ['shanghai' , 'center' , 'moldavka' , 'krista' , 'decabristov']
+        neighbour: ['shanghai' , 'center' , 'moldavka' , 'krista' , 'decabristov'],
+        faction: []
     },
 
     {
         id: 'Piter',
         title: 'питер',
         status: RegionStatus.PEACE,
-        neighbour: ['center' , 'moldavka' , 'mongora' , 'cerdavino' , 'varlamono']
+        neighbour: ['center' , 'moldavka' , 'mongora' , 'cerdavino' , 'varlamono'],
+        faction: []
     }
 ] as const;
 
