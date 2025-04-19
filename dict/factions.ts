@@ -25,3 +25,12 @@ export const faction: Faction[] = [
 ];
 
 export type FactionType = 'monolith' | 'sin' | 'skyline';
+
+import {Region} from "../interfaces";
+
+export const factionRegionMap: Record<FactionType, Region['id']> = {
+    'monolith': 'moldavka',
+    'sin': 'decabristov',
+    'skyline': 'obrazcovo'
+};
+

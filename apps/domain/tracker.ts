@@ -1,6 +1,7 @@
 import {BarrierContext, BarrierEvent, Step, Track} from "../../interfaces";
 import {stepEvent} from "../../dict/barrierEvent";
 import {faction} from "../../dict/factions";
+import {regionMap} from "../../dict/regionMap";
 import {getCivilian, getMilitary} from "./rules/actorRules";
 import {getTerritoryByRule} from "./rules/territoryRule";
 import {BarrierRandom} from "./random";
@@ -12,17 +13,35 @@ export class BarrierTracker {
     constructor(private ctx: BarrierContext, private timeoutRange = 1000) {
         ctx.tracker = this;
     }
+
+    private getNeighbourActors(rule: 'military' | 'civilian', firstActor: {region: string}): typeof faction[number][] {
+        const military = getMilitary(faction);
+        const civilian = getCivilian(faction);
+        const actors = rule === 'military' ? military : civilian;
+        
+        // Get valid neighbours for first actor's region
+        const region = regionMap.find(r => r.id === firstActor.region);
+        const validNeighbours = region?.neighbour || [];
+        
+        // Filter actors to only those in neighbouring regions
+        return actors.filter(actor => validNeighbours.includes(actor.region as any));
+    }
     trackEvent(event: BarrierEvent): void {
         const military = getMilitary(faction);
         const civilian = getCivilian(faction);
-        const actors = event.actorRule.map(rule => {
-            switch (rule) {
-                case "civilian":
-                    return civilian.splice(BarrierRandom.getRandomInt(civilian.length), 1)[0];
-                case "military":
-                    return military.splice(BarrierRandom.getRandomInt(military.length), 1)[0];
-            }
-        }).filter(Boolean);
+        
+        // Get first actor based on first rule
+        const firstRule = event.actorRule[0];
+        const firstActorPool = firstRule === 'military' ? military : civilian;
+        const firstActor = firstActorPool.splice(BarrierRandom.getRandomInt(firstActorPool.length), 1)[0];
+        
+        // Get second actor from neighboring regions
+        const secondRule = event.actorRule[1];
+        const neighbourActors = this.getNeighbourActors(secondRule, firstActor);
+        const secondActor = neighbourActors.splice(BarrierRandom.getRandomInt(neighbourActors.length), 1)[0];
+        
+        const actors = [firstActor, secondActor].filter(Boolean);
+        
         const track: Track = {
             id: crypto.randomUUID(),
             eventId: event.id,
