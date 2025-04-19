@@ -5,5 +5,6 @@ export interface Region {
     title: string;
     status: Status;
     neighbour: RegionsType[]
+    civil: boolean;
 }
 export type Status = 'war' | 'wreckage' | 'peace';
