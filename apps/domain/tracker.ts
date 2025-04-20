@@ -1,15 +1,13 @@
-import {BarrierContext, BarrierEvent, Track, EnhancedTrack, Faction} from "../../interfaces";
-import {stepEvent} from "../../dict/barrierEvent";
+import {BarrierContext, BarrierEvent, Track, Faction} from "../../interfaces";
 import {getTerritoryByRule} from "./rules/territoryRule";
 import {BarrierRandom} from "./random";
-import {TIMEOUTS, EventType, ActorType, NotifyType} from "../../dict/constants";
-import {Step} from "../../interfaces/steps";
+import {TIMEOUTS, ActorType, NotifyType} from "../../dict/constants";
 
 /**
  * Трекер событий игры. Отслеживает и управляет жизненным циклом событий.
  */
 export class BarrierTracker {
-    private pool: Map<string, EnhancedTrack> = new Map();
+    private pool: Map<string, Track> = new Map();
 
     constructor(private ctx: BarrierContext, private timeoutRange = TIMEOUTS.DEFAULT) {
         ctx.tracker = this;
@@ -97,49 +95,39 @@ export class BarrierTracker {
         }
     }
 
-    getTracksByEvent(event: BarrierEvent): EnhancedTrack[] {
+    getTracksByEvent(event: BarrierEvent): Track[] {
         return [...this.pool.values()].filter(t => t.eventId === event.id)
     }
 
     #addTrack(track: Track) {
-        const targetTrack: EnhancedTrack = {...track, scheduler: undefined, steps: []};
-        targetTrack.scheduler = setTimeout(() => this.#handleTrackStep(targetTrack), track.timeout ?? this.timeoutRange);
+        const targetTrack: Track = {...track};
+        targetTrack.scheduler = setTimeout(() => this.#handleTrackCompletion(targetTrack), track.timeout ?? this.timeoutRange);
         this.pool.set(targetTrack.id, targetTrack);
     }
 
-    #removeTrack(track: EnhancedTrack) {
+    #removeTrack(track: Track) {
         console.log('remove track: ', track);
         this.pool.delete(track.id);
     }
 
-    #handleTrackStep(track: EnhancedTrack) {
-        console.log('Tracker: new step by track: ', track.id);
-        // create step
-        const newStep = this.#createStep();
-        console.log('Tracker: new step created: ', newStep.id, newStep.title);
-        // if step final noty and ending track
-        track.steps.push(newStep);
-        this.ctx.notifier.notify({...newStep, type: EventType.STEP}, NotifyType.START);
-
-        if (newStep.final) {
-            const notifyType = newStep.id === 'resolve' ? NotifyType.RESOLVE : NotifyType.REJECT;
-            console.log('track ending: ', track.id);
-            this.ctx.notifier.notify(track, notifyType);
-            this.#removeTrack(track);
-        } else  {
-            setTimeout(() => this.#handleTrackStep(track), newStep.timeout)
-        }
-    }
-
-    #createStep(): Step {
-        return BarrierRandom.selectRandom(stepEvent);
+    #handleTrackCompletion(track: Track) {
+        console.log('Tracker: completing track: ', track.id);
+        
+        // Randomly choose between resolve and reject
+        const status = BarrierRandom.getRandomInt(2) === 0 ? 'resolve' : 'reject';
+        track.status = status;
+        
+        const notifyType = status === 'resolve' ? NotifyType.RESOLVE : NotifyType.REJECT;
+        console.log('track ending with status: ', status);
+        this.ctx.notifier.notify(track, notifyType);
+        this.#removeTrack(track);
     }
 
     /**
      * Получает все активные треки
      * @returns Массив активных треков
      */
-    getAllTracks(): EnhancedTrack[] {
+    getAllTracks(): Track[] {
         return [...this.pool.values()];
     }
 
