@@ -12,6 +12,7 @@ const ctx: BarrierContext = {
     tracker: undefined,
     notifier: undefined,
     actorEngine: undefined,
+    regionService: undefined,
 };
 
 new GameCore(ctx, 1000);
