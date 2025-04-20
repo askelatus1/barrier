@@ -10,6 +10,9 @@ export interface IRegionService {
     getRegionsByStatus(status: Region['status']): Region[];
     updateRegionStatus(regionId: string, status: Region['status']): void;
     setFactionToRegion(regionId: string, faction: Region['faction']): void;
+    getRegionsByFaction(factionId: string): Region[];
+    getMilitaryRegions(): Region[];
+    getCivilianRegions(): Region[];
 }
 
 export interface IActorEngine {

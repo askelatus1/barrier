@@ -1,8 +1,5 @@
-import {BarrierContext, BarrierEvent, Step, Track, EnhancedTrack} from "../../interfaces";
+import {BarrierContext, BarrierEvent, Step, Track, EnhancedTrack, Faction} from "../../interfaces";
 import {stepEvent} from "../../dict/barrierEvent";
-import {faction} from "../../dict/factions";
-import {regionMap} from "../../dict/regionMap";
-import {getCivilian, getMilitary} from "./rules/actorRules";
 import {getTerritoryByRule} from "./rules/territoryRule";
 import {BarrierRandom} from "./random";
 import {TIMEOUTS, EventType, ActorType} from "../../dict/constants";
@@ -12,7 +9,6 @@ import {TIMEOUTS, EventType, ActorType} from "../../dict/constants";
  */
 export class BarrierTracker {
     private pool: Map<string, EnhancedTrack> = new Map();
-    private readonly cache: Map<string, typeof faction[number][]> = new Map();
 
     constructor(private ctx: BarrierContext, private timeoutRange = TIMEOUTS.DEFAULT) {
         ctx.tracker = this;
@@ -24,27 +20,19 @@ export class BarrierTracker {
      * @param firstActor Первый актор, относительно которого ищутся соседи
      * @returns Массив акторов из соседних регионов
      */
-    private getNeighbourActors(rule: ActorType, firstActor: {baseRegion: string}): typeof faction[number][] {
-        const cacheKey = `${rule}-${firstActor.baseRegion}`;
-        if (this.cache.has(cacheKey)) {
-            return this.cache.get(cacheKey)!;
-        }
-
-        const military = getMilitary(faction);
-        const civilian = getCivilian(faction);
-        const actors = rule === ActorType.MILITARY ? military : civilian;
+    private getNeighbourActors(rule: ActorType, firstActor: {baseRegion: string}): Faction[] {
+        const actors = rule === ActorType.MILITARY ? 
+            this.ctx.actorEngine.getMilitaryActors() : 
+            this.ctx.actorEngine.getCivilianActors();
         
-        const region = regionMap.find(r => r.id === firstActor.baseRegion);
+        const region = this.ctx.regionService.getRegionById(firstActor.baseRegion);
         if (!region) {
             console.warn(`Region ${firstActor.baseRegion} not found`);
             return [];
         }
 
         const validNeighbours = region.neighbour;
-        const result = actors.filter(actor => validNeighbours.includes(actor.baseRegion as any));
-        
-        this.cache.set(cacheKey, result);
-        return result;
+        return actors.filter(actor => validNeighbours.includes(actor.baseRegion as any));
     }
 
     /**
@@ -54,11 +42,11 @@ export class BarrierTracker {
      */
     trackEvent(event: BarrierEvent): void {
         try {
-            const military = getMilitary(faction);
-            const civilian = getCivilian(faction);
-            
             const firstRule = event.actorRule[0];
-            const firstActorPool = firstRule === 'military' ? military : civilian;
+            const firstActorPool = firstRule === ActorType.MILITARY ? 
+                this.ctx.actorEngine.getMilitaryActors() : 
+                this.ctx.actorEngine.getCivilianActors();
+            
             if (firstActorPool.length === 0) {
                 throw new Error(`No available actors for rule ${firstRule}`);
             }

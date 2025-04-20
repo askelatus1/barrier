@@ -57,4 +57,16 @@ export class RegionService implements IRegionService {
             this.regionPool.set(regionId, region);
         }
     }
+
+    getRegionsByFaction(factionId: string): Region[] {
+        return this.getRegionsAll().filter(region => region.faction?.id === factionId);
+    }
+
+    getMilitaryRegions(): Region[] {
+        return this.getRegionsAll().filter(region => region.faction?.military === true);
+    }
+
+    getCivilianRegions(): Region[] {
+        return this.getRegionsAll().filter(region => !region.faction?.military);
+    }
 } 
