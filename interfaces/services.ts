@@ -18,6 +18,7 @@ export interface IRegionService {
 export interface IActorEngine {
     getMilitaryActors(): Faction[];
     getCivilianActors(): Faction[];
+    getTerroristActors(): Faction[];
     getActorById(id: string): Faction | undefined;
     getActorByRegionId(actor: Faction): Faction | undefined;
     getActorsAll(): Faction[];

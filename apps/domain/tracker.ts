@@ -20,19 +20,21 @@ export class BarrierTracker {
      * @param firstActor Первый актор, относительно которого ищутся соседи
      * @returns Массив акторов из соседних регионов
      */
-    private getNeighbourActors(rule: ActorType, firstActor: {baseRegion: string}): Faction[] {
-        const actors = rule === ActorType.MILITARY ? 
-            this.ctx.actorEngine.getMilitaryActors() : 
-            this.ctx.actorEngine.getCivilianActors();
-        
+    private getNeighbourActors(rule: ActorType, firstActor: Faction): Faction[] {
         const region = this.ctx.regionService.getRegionById(firstActor.baseRegion);
         if (!region) {
             console.warn(`Region ${firstActor.baseRegion} not found`);
             return [];
         }
 
-        const validNeighbours = region.neighbour;
-        return actors.filter(actor => validNeighbours.includes(actor.baseRegion as any));
+        const neighbourRegions = this.ctx.regionService.getNeighbourRegions(firstActor.baseRegion);
+        const actors = rule === ActorType.MILITARY ? 
+            this.ctx.actorEngine.getMilitaryActors() : 
+            this.ctx.actorEngine.getCivilianActors();
+
+        return actors.filter(actor => 
+            neighbourRegions.some(neighbour => neighbour.faction?.id === actor.id)
+        );
     }
 
     /**
@@ -43,9 +45,20 @@ export class BarrierTracker {
     trackEvent(event: BarrierEvent): void {
         try {
             const firstRule = event.actorRule[0];
-            const firstActorPool = firstRule === ActorType.MILITARY ? 
-                this.ctx.actorEngine.getMilitaryActors() : 
-                this.ctx.actorEngine.getCivilianActors();
+            let firstActorPool: Faction[];
+            switch (firstRule) {
+                case ActorType.MILITARY:
+                    firstActorPool = this.ctx.actorEngine.getMilitaryActors();
+                    break;
+                case ActorType.TERRORIST:
+                    firstActorPool = this.ctx.actorEngine.getTerroristActors();
+                    break;
+                case ActorType.CIVILIAN:
+                    firstActorPool = this.ctx.actorEngine.getCivilianActors();
+                    break;
+                default:
+                    throw new Error(`Unknown actor type: ${firstRule}`);
+            }
             
             if (firstActorPool.length === 0) {
                 throw new Error(`No available actors for rule ${firstRule}`);

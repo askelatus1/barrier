@@ -1,6 +1,6 @@
 import {BarrierContext, Faction, Region} from "../../interfaces";
 import {faction} from "../../dict/factions";
-import {getMilitary, getCivilian} from "./rules/actorRules";
+import {getMilitary, getCivilian, getTerrors} from "./rules/actorRules";
 import {getRegionByFaction, getRegionById} from "./rules/territoryRule";
 import {IActorEngine} from "../../interfaces/services";
 
@@ -24,6 +24,10 @@ export class ActorEngine implements IActorEngine {
 
     getCivilianActors(): Faction[] {
         return getCivilian(this.getActorsAll());
+    }
+
+    getTerroristActors(): Faction[] {
+        return getTerrors(this.getActorsAll());
     }
 
     getActorById(id: string): Faction | undefined {
