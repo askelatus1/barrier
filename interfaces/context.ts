@@ -3,6 +3,7 @@ import {ActorEngine} from "../apps/domain/actors";
 import {EventEngine} from "../apps/domain/events";
 import {IRegionService, IActorZoneService} from "./services";
 import {INotifier} from "./notify";
+import {GameCore} from "../apps/domain/core";
 
 export interface BarrierContext {
     tracker: BarrierTracker;
@@ -11,4 +12,5 @@ export interface BarrierContext {
     notifier: INotifier;
     eventEngine: EventEngine;
     actorZoneService: IActorZoneService;
+    core: GameCore;
 } 
