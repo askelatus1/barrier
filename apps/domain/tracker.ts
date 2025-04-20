@@ -1,8 +1,9 @@
-import {BarrierContext, BarrierEvent, Step, Track, EnhancedTrack, Faction} from "../../interfaces";
+import {BarrierContext, BarrierEvent, Track, EnhancedTrack, Faction} from "../../interfaces";
 import {stepEvent} from "../../dict/barrierEvent";
 import {getTerritoryByRule} from "./rules/territoryRule";
 import {BarrierRandom} from "./random";
-import {TIMEOUTS, EventType, ActorType} from "../../dict/constants";
+import {TIMEOUTS, EventType, ActorType, NotifyType} from "../../dict/constants";
+import {Step} from "../../interfaces/steps";
 
 /**
  * Трекер событий игры. Отслеживает и управляет жизненным циклом событий.
@@ -89,7 +90,7 @@ export class BarrierTracker {
 
             this.#addTrack(track);
             console.log('createTrack by event: ', track, event);
-            this.ctx.notifier.notify(track, 'start');
+            this.ctx.notifier.notify(track, NotifyType.START);
         } catch (error) {
             console.error('Failed to track event:', error);
             throw error;
@@ -118,10 +119,10 @@ export class BarrierTracker {
         console.log('Tracker: new step created: ', newStep.id, newStep.title);
         // if step final noty and ending track
         track.steps.push(newStep);
-        this.ctx.notifier.notify({...newStep, type: EventType.STEP});
+        this.ctx.notifier.notify({...newStep, type: EventType.STEP}, NotifyType.START);
 
         if (newStep.final) {
-            const notifyType: 'resolve' | 'reject' = newStep.id === 'resolve' ? 'resolve' : 'reject';
+            const notifyType = newStep.id === 'resolve' ? NotifyType.RESOLVE : NotifyType.REJECT;
             console.log('track ending: ', track.id);
             this.ctx.notifier.notify(track, notifyType);
             this.#removeTrack(track);

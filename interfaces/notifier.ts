@@ -1,15 +1,6 @@
-import {BarrierContext} from "./core";
 import {BarrierEvent} from "./event";
 import {Track} from "./track";
 import {NotifyType} from "../dict/constants";
-
-export type NotifyGenerator = (ctx: BarrierContext, payload: unknown) => string;
-
-export interface NotifyTemplate {
-    start?: NotifyGenerator;
-    reject?: NotifyGenerator;
-    resolve?: NotifyGenerator;
-}
 
 export interface INotifier {
     /**
@@ -18,4 +9,4 @@ export interface INotifier {
      * @param type Тип уведомления
      */
     notify(event: BarrierEvent | Track, type: NotifyType): void;
-}
+} 

@@ -1,7 +1,14 @@
-import {IRegionService} from "./services";
-import {IActorEngine} from "./services";
+import {BarrierTracker} from "../apps/domain/tracker";
+import {ActorEngine} from "../apps/domain/actors";
+import {EventEngine} from "../apps/domain/events";
+import {IRegionService, IActorZoneService} from "./services";
+import {INotifier} from "./notify";
 
 export interface BarrierContext {
+    tracker: BarrierTracker;
+    actorEngine: ActorEngine;
     regionService: IRegionService;
-    actorEngine: IActorEngine;
+    notifier: INotifier;
+    eventEngine: EventEngine;
+    actorZoneService: IActorZoneService;
 } 
