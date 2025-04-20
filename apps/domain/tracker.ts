@@ -133,4 +133,57 @@ export class BarrierTracker {
     #createStep(): Step {
         return BarrierRandom.selectRandom(stepEvent);
     }
+
+    /**
+     * Получает все активные треки
+     * @returns Массив активных треков
+     */
+    getAllTracks(): EnhancedTrack[] {
+        return [...this.pool.values()];
+    }
+
+    /**
+     * Останавливает и удаляет все активные треки
+     */
+    clearAllTracks(): void {
+        this.getAllTracks().forEach(track => {
+            if (track.scheduler) {
+                clearTimeout(track.scheduler);
+            }
+            this.#removeTrack(track);
+        });
+    }
+
+    /**
+     * Принудительно останавливает трек
+     * @param trackId ID трека для остановки
+     * @throws Error если трек не найден
+     */
+    stopTrack(trackId: string): void {
+        const track = this.pool.get(trackId);
+        if (!track) {
+            throw new Error(`Track with id ${trackId} not found`);
+        }
+        if (track.scheduler) {
+            clearTimeout(track.scheduler);
+        }
+        this.#removeTrack(track);
+    }
+
+    /**
+     * Проверяет статус трека
+     * @param trackId ID трека
+     * @returns true если трек активен, false если нет
+     */
+    isTrackActive(trackId: string): boolean {
+        return this.pool.has(trackId);
+    }
+
+    /**
+     * Получает количество активных треков
+     * @returns Количество активных треков
+     */
+    getActiveTracksCount(): number {
+        return this.pool.size;
+    }
 }
