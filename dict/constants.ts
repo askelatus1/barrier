@@ -1,6 +1,5 @@
 export enum EventType {
-    EVENT = 'event',
-    STEP = 'step'
+    EVENT = 'event'
 }
 
 export enum ActorType {
@@ -29,6 +28,5 @@ export enum NotifyType {
 
 export const TIMEOUTS = {
     DEFAULT: 1000,
-    STEP: 1000,
     EVENT: 1000
 } as const; 

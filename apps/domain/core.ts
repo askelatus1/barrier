@@ -70,7 +70,7 @@ export class GameCore {
 
         if (availableEvents.length > 0) {
             const selectedEvent = BarrierRandom.selectRandom(availableEvents);
-            this.ctx.eventEngine.createEventById(selectedEvent.id);
+            this.ctx.eventEngine.createEventById(selectedEvent.id, actor);
         }
     }
 }

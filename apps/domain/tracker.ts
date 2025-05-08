@@ -125,10 +125,7 @@ export class BarrierTracker {
             // }
             
             const actors = [firstActor, secondActor].filter(Boolean);
-            if (actors.length !== 2) {
-                throw new Error('Failed to create track: not enough actors');
-            }
-            
+           
             const track: Track = {
                 id: crypto.randomUUID(),
                 eventId: event.id,
