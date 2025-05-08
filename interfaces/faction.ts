@@ -1,5 +1,4 @@
 import {RegionsType} from "../dict/regionMap";
-import {FactionType} from "../dict/factions";
 
 export type FactionId = string;
 
@@ -9,5 +8,13 @@ export interface Faction {
     baseRegion: RegionsType;
     military: boolean;
     terror: boolean;
+}
+
+export type MilitaryFaction = Faction & {
+    military: true;
+}
+
+export type CivilianFaction = Faction & {
+    military: false;
 }
 

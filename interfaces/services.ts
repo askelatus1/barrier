@@ -2,6 +2,7 @@ import {Region} from "./region";
 import {Faction} from "./faction";
 import {FactionId} from "./faction";
 import {ActorZone} from "./index";
+import {ActorType} from "../dict/constants";
 
 /**
  * Interface for managing regions in the system
@@ -191,4 +192,34 @@ export interface IActorZoneService {
      * @returns true если регион открытый
      */
     isOpenRegion(zone: ActorZone, region: Region): boolean;
+
+    /**
+     * Проверяет входит ли регион в зону актора
+     * @param zone Зона актора
+     * @param regionId ID региона для проверки
+     * @returns true если регион входит в зону
+     */
+    isRegionInZone(zone: ActorZone, regionId: Region['id']): boolean;
+
+    /**
+     * Получает всех соседних акторов зоны
+     * @param zone Зона актора
+     * @returns Массив соседних фракций
+     */
+    getNeighbourActors(zone: ActorZone): Faction[];
+
+    /**
+     * Получает соседних акторов зоны определенного типа
+     * @param zone Зона актора
+     * @param type Тип актора (военный/гражданский/террорист)
+     * @returns Массив соседних фракций указанного типа
+     */
+    getNeighbourActorsByType(zone: ActorZone, type: ActorType): Faction[];
+
+    /**
+     * Получает все соседние регионы зоны
+     * @param zone Зона актора
+     * @returns Массив соседних регионов, не входящих в зону
+     */
+    getNeighbourRegions(zone: ActorZone): Region[];
 } 

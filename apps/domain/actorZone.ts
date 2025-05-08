@@ -1,6 +1,7 @@
 import {BarrierContext, Region, Faction, FactionId} from "../../interfaces";
 import {ActorZone} from "../../interfaces/actorZone";
 import {IActorZoneService} from "../../interfaces/services";
+import {ActorType} from "../../dict/constants";
 
 export class ActorZoneService implements IActorZoneService {
     private zones: Map<FactionId, ActorZone> = new Map();
@@ -67,6 +68,10 @@ export class ActorZoneService implements IActorZoneService {
         return neighbours.some(neighbour => !neighbour.faction);
     }
 
+    isRegionInZone(zone: ActorZone, regionId: Region['id']): boolean {
+        return zone.regions.some(region => region.id === regionId);
+    }
+
     /**
      * Обновляет все зоны
      */
@@ -83,5 +88,34 @@ export class ActorZoneService implements IActorZoneService {
         if (zone) {
             this.updateZone(zone);
         }
+    }
+
+    getNeighbourActors(zone: ActorZone): Faction[] {
+        return this.getNeighbourRegions(zone)
+            .filter(region => region.faction)
+            .map(region => region.faction as Faction);
+    }
+
+    getNeighbourRegions(zone: ActorZone): Region[] {
+        const neighbours = zone.regions.flatMap(region => 
+            this.ctx.regionService.getNeighbourRegions(region.id)
+        );
+        
+        return neighbours.filter(region => !this.isRegionInZone(zone, region.id));
+    }
+
+    getNeighbourActorsByType(zone: ActorZone, type: ActorType): Faction[] {
+        const neighbours = this.getNeighbourActors(zone);
+        
+        return neighbours.filter(actor => {
+            if (type === ActorType.MILITARY) {
+                return actor.military;
+            } else if (type === ActorType.CIVILIAN) {
+                return !actor.military && !actor.terror;
+            } else if (type === ActorType.TERRORIST) {
+                return actor.terror;
+            }
+            return false;
+        });
     }
 } 

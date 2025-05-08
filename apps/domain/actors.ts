@@ -1,4 +1,4 @@
-import {BarrierContext, Faction, Region} from "../../interfaces";
+import {BarrierContext, Faction, MilitaryFaction, Region} from "../../interfaces";
 import {faction} from "../../dict/factions";
 import {getMilitary, getCivilian, getTerrors} from "./rules/actorRules";
 import {getRegionByFaction, getRegionById} from "./rules/territoryRule";
@@ -14,6 +14,12 @@ export class ActorEngine implements IActorEngine {
 
     private initializeActors(): void {
         faction.forEach(actor => {
+            if (actor.military) {
+                const region = getRegionById(actor.baseRegion);
+                if (region) {
+                    region.faction = actor as MilitaryFaction;
+                }
+            }
             this.actorPool.set(actor.id, actor);
         });
     }
@@ -44,12 +50,16 @@ export class ActorEngine implements IActorEngine {
     }
 
     getNeighbourTerritoriesByActor(actor: Faction): Region[] {
-        const region = getRegionByFaction(actor);
-        return region.neighbour.map(id => getRegionById(id));
+        const actorZone = this.ctx.actorZoneService.getZoneByFactionId(actor.id);
+        if (!actorZone) return [];
+        
+        return this.ctx.actorZoneService.getNeighbourRegions(actorZone);
     }
 
     getNeighbourActorsByActor(actor: Faction): Faction[] {
-        const regions = this.getNeighbourTerritoriesByActor(actor);
-        return regions.map(region => this.getActorById(region.id));
+        const actorZone = this.ctx.actorZoneService.getZoneByFactionId(actor.id);
+        if (!actorZone) return [];
+        
+        return this.ctx.actorZoneService.getNeighbourActors(actorZone);
     }
 }

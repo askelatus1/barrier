@@ -1,7 +1,8 @@
-import {BarrierContext, BarrierEvent, Track, Faction} from "../../interfaces";
+import {BarrierContext, BarrierEvent, Track, Faction, Region} from "../../interfaces";
 import {getTerritoryByRule} from "./rules/territoryRule";
 import {BarrierRandom} from "./random";
-import {TIMEOUTS, ActorType, NotifyType} from "../../dict/constants";
+import {TIMEOUTS, ActorType, NotifyType, RegionStatus} from "../../dict/constants";
+import {ActionType} from "../../interfaces/event";
 
 /**
  * Трекер событий игры. Отслеживает и управляет жизненным циклом событий.
@@ -20,20 +21,18 @@ export class BarrierTracker {
      * @returns Массив акторов из соседних регионов
      */
     private getNeighbourActors(rule: ActorType, firstActor: Faction): Faction[] {
-        const region = this.ctx.regionService.getRegionById(firstActor.baseRegion);
-        if (!region) {
-            console.warn(`Region ${firstActor.baseRegion} not found`);
+        if (!firstActor) {
+            console.warn('First actor is undefined');
             return [];
         }
 
-        const neighbourRegions = this.ctx.regionService.getNeighbourRegions(firstActor.baseRegion);
-        const actors = rule === ActorType.MILITARY ? 
-            this.ctx.actorEngine.getMilitaryActors() : 
-            this.ctx.actorEngine.getCivilianActors();
+        const actorZone = this.ctx.actorZoneService.getZoneByFactionId(firstActor.id);
+        if (!actorZone) {
+            console.warn(`Actor zone not found for faction ${firstActor.id}`);
+            return [];
+        }
 
-        return actors.filter(actor => 
-            neighbourRegions.some(neighbour => neighbour.faction?.id === actor.id)
-        );
+        return this.ctx.actorZoneService.getNeighbourActorsByType(actorZone, rule);
     }
 
     /**
@@ -41,37 +40,89 @@ export class BarrierTracker {
      * @param event Событие для отслеживания
      * @throws Error если не удалось создать трек
      */
-    trackEvent(event: BarrierEvent): void {
+    trackEvent(event: BarrierEvent, initializer: Faction): void {
         try {
-            const firstRule = event.actorRule[0];
-            let firstActorPool: Faction[];
-            switch (firstRule) {
-                case ActorType.MILITARY:
-                    firstActorPool = this.ctx.actorEngine.getMilitaryActors();
+            const firstActor = initializer;
+            if (!firstActor) {
+                throw new Error('No initializer available');
+            }
+            
+            // Определяем территорию в зависимости от типа события
+            let territory: Region;
+            let secondActor: Faction | undefined;
+            
+            switch (event.actionType) {
+                case ActionType.CAPTURE:
+                    // Для захвата используем открытые регионы из зоны актора
+                    const actorZone = this.ctx.actorZoneService.getZoneByFactionId(firstActor.id);
+                    if (!actorZone) {
+                        throw new Error(`Actor zone not found for faction ${firstActor.id}`);
+                    }
+                    
+                    const openRegions = this.ctx.actorZoneService.getOpenRegions(actorZone);
+                    if (openRegions.length === 0) {
+                        throw new Error(`No open regions available for faction ${firstActor.id}`);
+                    }
+                    
+                    // Выбираем случайный открытый регион
+                    territory = openRegions[BarrierRandom.getRandomInt(openRegions.length)];
                     break;
-                case ActorType.TERRORIST:
-                    firstActorPool = this.ctx.actorEngine.getTerroristActors();
+                
+                case ActionType.WAR:
+                    // Для войны используем фронтовые регионы из зоны актора
+                    const warActorZone = this.ctx.actorZoneService.getZoneByFactionId(firstActor.id);
+                    if (!warActorZone) {
+                        throw new Error(`Actor zone not found for faction ${firstActor.id}`);
+                    }
+                    
+                    const frontRegions = this.ctx.actorZoneService.getFrontRegions(warActorZone);
+                    if (frontRegions.length === 0) {
+                        throw new Error(`No front regions available for faction ${firstActor.id}`);
+                    }
+                    
+                    // Выбираем случайный фронтовой регион
+                    territory = frontRegions[BarrierRandom.getRandomInt(frontRegions.length)];
+                    secondActor = territory.faction;
+                    
+                    // Устанавливаем статус WAR для территории
+                    this.ctx.regionService.updateRegionStatus(territory.id, RegionStatus.WAR);
                     break;
-                case ActorType.CIVILIAN:
-                    firstActorPool = this.ctx.actorEngine.getCivilianActors();
-                    break;
+                
                 default:
-                    throw new Error(`Unknown actor type: ${firstRule}`);
+                    // Для других типов событий используем стандартную логику территориальных правил
+                    const secondRule = event.actorRule[1];
+                    const neighbourActors = this.getNeighbourActors(secondRule, firstActor);
+                    if (neighbourActors.length === 0) {
+                        throw new Error(`No available neighbour actors for rule ${secondRule}`);
+                    }
+                    
+                    secondActor = neighbourActors[BarrierRandom.getRandomInt(neighbourActors.length)];
+                    const actorRegions = [firstActor.baseRegion, secondActor.baseRegion];
+                    territory = getTerritoryByRule(actorRegions, event.territoryRule);
+                    break;
             }
             
-            if (firstActorPool.length === 0) {
-                throw new Error(`No available actors for rule ${firstRule}`);
-            }
-
-            const firstActor = firstActorPool.splice(BarrierRandom.getRandomInt(firstActorPool.length), 1)[0];
-            
-            const secondRule = event.actorRule[1];
-            const neighbourActors = this.getNeighbourActors(secondRule, firstActor);
-            if (neighbourActors.length === 0) {
-                throw new Error(`No available neighbour actors for rule ${secondRule}`);
-            }
-
-            const secondActor = neighbourActors.splice(BarrierRandom.getRandomInt(neighbourActors.length), 1)[0];
+            /**
+             * @todo: Логика определения второго актора для CAPTURE и WAR событий
+             * - Если территория принадлежит другой фракции, использовать её
+             * - Иначе искать актора в соседних регионах
+             */
+            // // Для CAPTURE и WAR событий - определяем второго актора если он еще не определен
+            // if (!secondActor) {
+            //     const secondRule = event.actorRule[1];
+                
+            //     if (territory.faction && territory.faction.id !== firstActor.id) {
+            //         // Если территория принадлежит другой фракции, используем её
+            //         secondActor = territory.faction;
+            //     } else {
+            //         // Иначе ищем актора в соседних регионах
+            //         const neighbourActors = this.getNeighbourActors(secondRule, firstActor);
+            //         if (neighbourActors.length === 0) {
+            //             throw new Error(`No available neighbour actors for rule ${secondRule}`);
+            //         }
+            //         secondActor = neighbourActors[BarrierRandom.getRandomInt(neighbourActors.length)];
+            //     }
+            // }
             
             const actors = [firstActor, secondActor].filter(Boolean);
             if (actors.length !== 2) {
@@ -82,10 +133,10 @@ export class BarrierTracker {
                 id: crypto.randomUUID(),
                 eventId: event.id,
                 timeout: BarrierRandom.getRandomInt(this.timeoutRange),
-                territory: getTerritoryByRule(actors.map(a => a.baseRegion), event.territoryRule),
+                territory,
                 actors
             };
-
+            
             this.#addTrack(track);
             console.log('createTrack by event: ', track, event);
             this.ctx.notifier.notify(track, NotifyType.START);
