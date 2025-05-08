@@ -30,7 +30,8 @@ export type ActorRuleTypeMap = {
 export enum TerritoryRuleType {
     INITIATOR = 'initiator',
     VICTIM = 'victim',
-    BOTH = 'both'
+    BOTH = 'both',
+    EMPTY = 'empty'  // Для пустых регионов
 }
 
 export enum RegionStatus {

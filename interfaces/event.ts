@@ -5,7 +5,7 @@ export interface BarrierEvent {
     type: EventType;
     actionType: ActionType;
     title: string;
-    actorRule: [ActorRuleType, ActorRuleType]; // Всегда ровно два правила: для инициатора и цели
+    actorRule: ActorRuleType[]; // Одно правило для захвата, два для других действий
     territoryRule: TerritoryRuleType;
     notify?: NotifyTemplate;
 }
