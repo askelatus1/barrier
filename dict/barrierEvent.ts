@@ -9,7 +9,6 @@ export const barrierEvent: BarrierEvent[] = [
         actionType: ActionType.WAR,
         actorRule: [ActorType.MILITARY, ActorType.MILITARY],
         territoryRule: TerritoryRuleType.BOTH,
-        military: true,
         notify: {
             start: (ctx: BarrierContext, track: Track) => {
                 const [init, victim]: Faction[] = track.actors;
@@ -36,7 +35,6 @@ export const barrierEvent: BarrierEvent[] = [
         actionType: ActionType.WAR,
         actorRule: [ActorType.MILITARY, ActorType.MILITARY],
         territoryRule: TerritoryRuleType.BOTH,
-        military: true,
         notify: {
             start: (ctx: BarrierContext,  track: Track) => {
                 const [init, victim]: Faction[] = track.actors;
@@ -63,7 +61,6 @@ export const barrierEvent: BarrierEvent[] = [
         actionType: ActionType.WAR,
         actorRule: [ActorType.MILITARY, ActorType.MILITARY],
         territoryRule: TerritoryRuleType.BOTH,
-        military: true,
         notify: {
             start: (ctx: BarrierContext,  track: Track) => {
                 const [init, victim]: Faction[] = track.actors;
@@ -90,7 +87,6 @@ export const barrierEvent: BarrierEvent[] = [
         actionType: ActionType.WAR,
         actorRule: [ActorType.MILITARY, ActorType.MILITARY],
         territoryRule: TerritoryRuleType.VICTIM,
-        military: true,
         notify: {
             start: (ctx: BarrierContext,  track: Track) => {
                 const [init, victim]: Faction[] = track.actors;
@@ -117,7 +113,6 @@ export const barrierEvent: BarrierEvent[] = [
         actionType: ActionType.WAR,
         actorRule: [ActorType.MILITARY, ActorType.MILITARY],
         territoryRule: TerritoryRuleType.VICTIM,
-        military: true,
         notify: {
             start: (ctx: BarrierContext,  track: Track) => {
                 const [init, victim]: Faction[] = track.actors;
@@ -141,10 +136,9 @@ export const barrierEvent: BarrierEvent[] = [
         id: 'trade',
         title: 'установление торговых отношений',
         type: EventType.EVENT,
-        actionType: ActionType.PEACE,
+        actionType: ActionType.TRADE,
         actorRule: [ActorType.CIVILIAN, ActorType.CIVILIAN],
         territoryRule: TerritoryRuleType.BOTH,
-        military: false,
         notify: {
             start: (ctx: BarrierContext,  track: Track) => {
                 const [init, victim]: Faction[] = track.actors;
@@ -167,7 +161,6 @@ export const barrierEvent: BarrierEvent[] = [
         actionType: ActionType.WAR,
         actorRule: [ActorType.MILITARY, ActorType.MILITARY],
         territoryRule: TerritoryRuleType.BOTH,
-        military: true,
         notify: {
             start: (ctx: BarrierContext,  track: Track) => {
                 const [init, victim]: Faction[] = track.actors;
@@ -191,10 +184,9 @@ export const barrierEvent: BarrierEvent[] = [
         id: 'scientific',
         title: 'наладили научные отношения',
         type: EventType.EVENT,
-        actionType: ActionType.PEACE,
+        actionType: ActionType.DIPLOMACY,
         actorRule: [ActorType.MILITARY, ActorType.MILITARY],
         territoryRule: TerritoryRuleType.BOTH,
-        military: false,
         notify: {
             start: (ctx: BarrierContext,  track: Track) => {
                 const [init, victim]: Faction[] = track.actors;
@@ -218,7 +210,6 @@ export const barrierEvent: BarrierEvent[] = [
         actionType: ActionType.PEACE,
         actorRule: [ActorType.MILITARY, ActorType.CIVILIAN],
         territoryRule: TerritoryRuleType.BOTH,
-        military: false,
         notify: {
             start: (ctx: BarrierContext,  track: Track) => {
                 const [init, victim]: Faction[] = track.actors;

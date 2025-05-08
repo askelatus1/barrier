@@ -8,7 +8,6 @@ export interface BarrierEvent {
     title: string;
     actorRule: ActorType[];
     territoryRule: TerritoryRuleType;
-    military: boolean;
     notify?: NotifyTemplate;
 }
 
