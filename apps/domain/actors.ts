@@ -69,6 +69,33 @@ export class ActorEngine implements IActorEngine {
         }
     }
 
+    /**
+     * Фильтрует массив акторов по правилу
+     * @param actors Массив акторов для фильтрации
+     * @param rule Правило фильтрации
+     * @returns Отфильтрованный массив акторов
+     */
+    filterActorsByRule(actors: Faction[], rule: ActorRuleType): Faction[] {
+        switch(rule) {
+            case ActorRuleType.MILITARY:
+                return actors.filter(actor => actor.type === ActorType.MILITARY);
+            case ActorRuleType.CIVILIAN:
+                return actors.filter(actor => actor.type === ActorType.CIVILIAN);
+            case ActorRuleType.TERRORIST:
+                return actors.filter(actor => actor.type === ActorType.TERRORIST);
+            case ActorRuleType.ARMORED:
+                return actors.filter(actor => 
+                    actor.type === ActorType.MILITARY || actor.type === ActorType.TERRORIST
+                );
+            case ActorRuleType.ALL:
+                return actors;
+            case ActorRuleType.NONE:
+                return [];
+            default:
+                return [];
+        }
+    }
+
     getNeighbourTerritoriesByActor(actor: Faction): Region[] {
         const actorZone = this.ctx.actorZoneService.getZoneByFactionId(actor.id);
         if (!actorZone) return [];

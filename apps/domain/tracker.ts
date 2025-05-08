@@ -121,10 +121,9 @@ export class BarrierTracker {
                         }
 
                         // Получаем свои регионы и открытые регионы соседей
-                        const ownRegions = this.ctx.actorZoneService.getOwnRegions(zone);
-                        const openRegions = this.ctx.actorZoneService.getOpenRegions(zone);
+                        const neighbourRegions = this.ctx.actorZoneService.getEmptyNeighbourRegions(actorZone);
 
-                        const availableRegions = [...ownRegions, ...openRegions];
+                        const availableRegions = [...neighbourRegions];
                         if (availableRegions.length === 0) {
                             throw new Error(`No available regions for peace event for military faction ${firstActor.id}`);
                         }
@@ -140,18 +139,19 @@ export class BarrierTracker {
                         }
 
                         // Получаем соседние свободные регионы
-                        const neighbourRegions = this.ctx.regionService.getNeighbourRegions(baseRegion.id)
-                            .filter(region => !region.faction);
+                        const neighbourRegions = this.ctx.regionService.getNeighbourRegions(baseRegion.id);
 
-                        const availableRegions = [baseRegion, ...neighbourRegions];
+                        const availableRegions = [...neighbourRegions];
                         if (availableRegions.length === 0) {
                             throw new Error(`No available regions for peace event for faction ${firstActor.id}`);
                         }
 
                         territory = BarrierRandom.selectRandom(availableRegions);
                     }
-                    secondActor = territory.faction ?? territory ? 
-                        BarrierRandom.selectRandom(this.ctx.actorEngine.getActorsByBaseRegion(territory.id)) : 
+
+                    const availableActors = this.ctx.actorEngine.getActorsByBaseRegion(territory.id);
+                    secondActor = territory ? 
+                        BarrierRandom.selectRandom(this.ctx.actorEngine.filterActorsByRule(availableActors, event.actorRule[1])) : 
                         undefined;
                         
                     break;

@@ -27,4 +27,4 @@ new ActorEngine(ctx);
 new ActorZoneService(ctx);
 
 // ctx.core.start();
-ctx.eventEngine.createEventById('capture_port', faction.find(f => f.id === 'sin'));
+ctx.eventEngine.createEventById('infrastructure_development', faction.find(f => f.id === 'rudnik_civ'));
