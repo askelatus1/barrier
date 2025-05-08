@@ -90,10 +90,23 @@ export class ActorZoneService implements IActorZoneService {
         }
     }
 
-    getNeighbourActors(zone: ActorZone): Faction[] {
-        return this.getNeighbourRegions(zone)
-            .filter(region => region.faction)
-            .map(region => region.faction as Faction);
+    getNeighbourActors(zone: ActorZone, type: ActorType = ActorType.MILITARY): Faction[] {
+        if (type === ActorType.MILITARY) {
+            return this.getNeighbourRegions(zone)
+                .filter(region => region.faction)
+                .map(region => region.faction as Faction);
+        } else {
+            // Для не военных фракций проверяем baseRegion
+            const allActors = this.ctx.actorEngine.getActorsAll();
+            return this.getNeighbourRegions(zone)
+                .flatMap(region => {
+                    return allActors.filter(actor => 
+                        actor.baseRegion === region.id && 
+                        ((zone.faction.terror && actor.terror) || 
+                         (!zone.faction.terror && !actor.military && !actor.terror))
+                    );
+                });
+        }
     }
 
     getNeighbourRegions(zone: ActorZone): Region[] {
@@ -105,7 +118,7 @@ export class ActorZoneService implements IActorZoneService {
     }
 
     getNeighbourActorsByType(zone: ActorZone, type: ActorType): Faction[] {
-        const neighbours = this.getNeighbourActors(zone);
+        const neighbours = this.getNeighbourActors(zone, type);
         
         return neighbours.filter(actor => {
             if (type === ActorType.MILITARY) {

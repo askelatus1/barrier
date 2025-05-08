@@ -3,6 +3,8 @@ import {BarrierTracker, EventEngine, GameCore} from "./apps/domain";
 import {Notifier} from "./apps/domain/notifier";
 import {ActorEngine} from "./apps/domain/actors";
 import {ActorZoneService} from "./apps/domain/actorZone";
+import { RegionService } from "./apps/domain/regions";
+import { faction } from "./dict/factions";
 
 console.log('Engine init');
 
@@ -21,7 +23,8 @@ new EventEngine(ctx);
 new BarrierTracker(ctx);
 new Notifier(ctx);
 new ActorEngine(ctx);
+new RegionService(ctx);
 new ActorZoneService(ctx);
 
 ctx.core.start();
-// ctx.eventEngine.createEventById('infantry');
+// ctx.eventEngine.createEventById('humanitarian', faction[0]);

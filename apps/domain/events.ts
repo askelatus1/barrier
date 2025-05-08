@@ -10,7 +10,6 @@ export class EventEngine {
 
     createEventById(id: string, initializer: Faction): void {
         const ev = barrierEvent.find(event => event.id === id);
-        console.log('EventEngine create event manually', ev.id, ev.title);
         this.ctx.tracker.trackEvent(ev, initializer );
     }
 

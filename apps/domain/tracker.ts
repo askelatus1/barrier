@@ -93,7 +93,7 @@ export class BarrierTracker {
                     const secondRule = event.actorRule[1];
                     const neighbourActors = this.getNeighbourActors(secondRule, firstActor);
                     if (neighbourActors.length === 0) {
-                        throw new Error(`No available neighbour actors for rule ${secondRule}`);
+                        throw new Error(`No available neighbour actors for rule ${secondRule} for event ${event.id} firstActor: ${firstActor.id}`);
                     }
                     
                     secondActor = neighbourActors[BarrierRandom.getRandomInt(neighbourActors.length)];
@@ -135,8 +135,6 @@ export class BarrierTracker {
             };
             
             this.#addTrack(track);
-            console.log('createTrack by event: ', track, event);
-            this.ctx.notifier.notify(track, NotifyType.START);
         } catch (error) {
             console.error('Failed to track event:', error);
             throw error;
@@ -151,22 +149,20 @@ export class BarrierTracker {
         const targetTrack: Track = {...track};
         targetTrack.scheduler = setTimeout(() => this.#handleTrackCompletion(targetTrack), track.timeout ?? this.timeoutRange);
         this.pool.set(targetTrack.id, targetTrack);
+        this.ctx.notifier.notify(track, NotifyType.START);
     }
 
     #removeTrack(track: Track) {
-        console.log('remove track: ', track);
         this.pool.delete(track.id);
     }
 
     #handleTrackCompletion(track: Track) {
-        console.log('Tracker: completing track: ', track.id);
-        
         // Randomly choose between resolve and reject
         const status = BarrierRandom.getRandomInt(2) === 0 ? 'resolve' : 'reject';
         track.status = status;
         
         const notifyType = status === 'resolve' ? NotifyType.RESOLVE : NotifyType.REJECT;
-        console.log('track ending with status: ', status);
+        console.log(`track ${track.id} ending with status: ${status}`);
         this.ctx.notifier.notify(track, notifyType);
         this.#removeTrack(track);
     }
