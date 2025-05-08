@@ -1,7 +1,7 @@
 import {BarrierContext, Region, Faction, FactionId} from "../../interfaces";
 import {ActorZone} from "../../interfaces/actorZone";
 import {IActorZoneService} from "../../interfaces/services";
-import {ActorType} from "../../dict/constants";
+import {ActorType, RegionStatus} from "../../dict/constants";
 
 export class ActorZoneService implements IActorZoneService {
     private zones: Map<FactionId, ActorZone> = new Map();
@@ -12,7 +12,7 @@ export class ActorZoneService implements IActorZoneService {
     }
 
     private initializeZones(): void {
-        const factions = this.ctx.actorEngine.getActorsAll();
+        const factions = this.ctx.actorEngine.getActorsAll().filter(actor => actor.military);
         factions.forEach(faction => {
             const regions = this.ctx.regionService.getRegionsByFaction(faction.id);
             const zone: ActorZone = {
@@ -110,11 +110,28 @@ export class ActorZoneService implements IActorZoneService {
     }
 
     getNeighbourRegions(zone: ActorZone): Region[] {
-        const neighbours = zone.regions.flatMap(region => 
-            this.ctx.regionService.getNeighbourRegions(region.id)
-        );
-        
-        return neighbours.filter(region => !this.isRegionInZone(zone, region.id));
+        const allNeighbours = new Set<Region>();
+        zone.regions.forEach(region => {
+            const neighbours = this.ctx.regionService.getNeighbourRegions(region.id);
+            neighbours.forEach(neighbour => {
+                if (!this.isRegionInZone(zone, neighbour.id)) {
+                    allNeighbours.add(neighbour);
+                }
+            });
+        });
+        return Array.from(allNeighbours);
+    }
+
+    getRegionsByStatus(zone: ActorZone, status: RegionStatus): Region[] {
+        return zone.regions.filter(region => region.status === status);
+    }
+
+    getNeighbourRegionsByStatus(zone: ActorZone, status: RegionStatus): Region[] {
+        return this.getNeighbourRegions(zone).filter(region => region.status === status);
+    }
+
+    getOwnRegions(zone: ActorZone): Region[] {
+        return zone.regions.filter(region => region.faction?.id === zone.faction.id);
     }
 
     getNeighbourActorsByType(zone: ActorZone, type: ActorType): Faction[] {

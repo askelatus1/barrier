@@ -17,4 +17,7 @@ export enum ActionType {
     PEACE = 'peace',
     WAR = 'war',
     WRECKAGE = 'wreckage',
+    TRADE = 'trade',
+    DIPLOMACY = 'diplomacy',
+    ESPIONAGE = 'espionage'
 }

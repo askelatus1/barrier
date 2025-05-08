@@ -62,4 +62,8 @@ export class ActorEngine implements IActorEngine {
         
         return this.ctx.actorZoneService.getNeighbourActors(actorZone);
     }
+
+    getActorsByBaseRegion(regionId: string): Faction[] {
+        return this.getActorsAll().filter(actor => actor.baseRegion === regionId);
+    }
 }

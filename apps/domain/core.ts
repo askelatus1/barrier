@@ -1,4 +1,4 @@
-import {BarrierContext} from "../../interfaces";
+import {ActionType, BarrierContext} from "../../interfaces";
 import {clearTimeout} from "node:timers";
 import {BarrierRandom} from "./random";
 import {ActorType} from "../../dict/constants";
@@ -29,44 +29,84 @@ export class GameCore {
     addEvent(): void {
         console.log('Game core addEvent fired: ', performance.now());
         this.ttl = BarrierRandom.getRandomInt(10);
-
+       
+        // Создаем пул доступных событий
+        let availableEvents: any[] = [];
         // Выбираем случайного актора
         const actors = this.ctx.actorEngine.getActorsAll();
         const actor = BarrierRandom.selectRandom(actors);
-        
-        // Получаем зону актора
-        const zone = this.ctx.actorZoneService.getZoneByFactionId(actor.id);
-        if (!zone) {
-            console.error('Zone not found for actor:', actor.id);
-            return;
-        }
-
-        // Проверяем наличие открытых и фронтовых регионов
-        const hasOpenRegions = zone.openRegions.length > 0;
-        const hasFrontRegions = zone.frontRegions.length > 0;
 
         // Определяем тип актора
-        const actorType = actor.military ? ActorType.MILITARY : ActorType.CIVILIAN;
+        const actorType = actor.military ? ActorType.MILITARY : 
+                         actor.terror ? ActorType.TERRORIST : 
+                         ActorType.CIVILIAN;
+    
+        switch (actorType) {
+            case ActorType.MILITARY: {
+                // Получаем зону актора
+                const zone = this.ctx.actorZoneService.getZoneByFactionId(actor.id);
+                if (!zone) {
+                    console.error('Zone not found for actor:', actor.id);
+                    return;
+                }
 
-        // Создаем пул доступных событий
-        let availableEvents: any[] = [];
+                // Проверяем наличие открытых и фронтовых регионов
+                const hasOpenRegions = zone.openRegions.length > 0;
+                const hasFrontRegions = zone.frontRegions.length > 0;
 
-        // Всегда добавляем мирные события
+                // Добавляем события в пул в зависимости от условий
+                if (hasOpenRegions) {
+                    // Если есть открытые регионы, добавляем события типа CAPTURE
+                    availableEvents.push(...this.ctx.eventEngine.getEventsByActorType(actorType)
+                        .filter(event => event.actionType === ActionType.CAPTURE));
+                }
+                
+                if (hasFrontRegions) {
+                    // Если есть фронтовые регионы, добавляем события типа WAR
+                    availableEvents.push(...this.ctx.eventEngine.getEventsByActorType(actorType)
+                        .filter(event => event.actionType === ActionType.WAR));
+                }
+
+                // Добавляем дипломатические и шпионские события
+                availableEvents.push(
+                    ...this.ctx.eventEngine.getEventsByActorType(actorType)
+                        .filter(event => 
+                            event.actionType === ActionType.DIPLOMACY ||
+                            event.actionType === ActionType.ESPIONAGE
+                        )
+                );
+                break;
+            }
+            case ActorType.TERRORIST: {
+                // Для террористов добавляем события типа WAR, CAPTURE и WRECKAGE
+                availableEvents.push(
+                    ...this.ctx.eventEngine.getEventsByActorType(actorType)
+                        .filter(event => 
+                            event.actionType === ActionType.WAR || 
+                            event.actionType === ActionType.CAPTURE ||
+                            event.actionType === ActionType.WRECKAGE ||
+                            event.actionType === ActionType.ESPIONAGE
+                        )
+                );
+                break;
+            }
+            case ActorType.CIVILIAN: {
+                // Для гражданских добавляем мирные события и торговлю
+                availableEvents.push(
+                    ...this.ctx.eventEngine.getEventsByActorType(actorType)
+                        .filter(event => 
+                            event.actionType === ActionType.PEACE ||
+                            event.actionType === ActionType.TRADE ||
+                            event.actionType === ActionType.DIPLOMACY
+                        )
+                );
+                break;
+            }
+        }
+
+        // Всегда добавляем мирные события для всех типов акторов
         availableEvents.push(...this.ctx.eventEngine.getEventsByActorType(actorType)
-            .filter(event => event.actionType === 'peace'));
-
-        // Добавляем события в пул в зависимости от условий
-        if (hasOpenRegions) {
-            // Если есть открытые регионы, добавляем события типа CAPTURE
-            availableEvents.push(...this.ctx.eventEngine.getEventsByActorType(actorType)
-                .filter(event => event.actionType === 'capture'));
-        }
-        
-        if (hasFrontRegions) {
-            // Если есть фронтовые регионы, добавляем события типа WAR
-            availableEvents.push(...this.ctx.eventEngine.getEventsByActorType(actorType)
-                .filter(event => event.actionType === 'war'));
-        }
+            .filter(event => event.actionType === ActionType.PEACE));
 
         if (availableEvents.length > 0) {
             const selectedEvent = BarrierRandom.selectRandom(availableEvents);

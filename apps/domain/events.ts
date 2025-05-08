@@ -79,4 +79,5 @@ export class EventEngine {
             return event.actorRule.every(rule => actorTypes.includes(rule));
         });
     }
+    
 }

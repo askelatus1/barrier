@@ -2,7 +2,7 @@ import {Region} from "./region";
 import {Faction} from "./faction";
 import {FactionId} from "./faction";
 import {ActorZone} from "./index";
-import {ActorType} from "../dict/constants";
+import {ActorType, RegionStatus} from "../dict/constants";
 
 /**
  * Interface for managing regions in the system
@@ -138,6 +138,13 @@ export interface IActorEngine {
      * @returns Array of neighboring factions
      */
     getNeighbourActorsByActor(actor: Faction): Faction[];
+
+    /**
+     * Retrieves all factions that have their base in the specified region
+     * @param regionId - The ID of the region to check
+     * @returns Array of factions that have their base in the specified region
+     */
+    getActorsByBaseRegion(regionId: string): Faction[];
 }
 
 export interface IActorZoneService {
@@ -222,4 +229,35 @@ export interface IActorZoneService {
      * @returns Массив соседних регионов, не входящих в зону
      */
     getNeighbourRegions(zone: ActorZone): Region[];
+
+    /**
+     * Получает регионы зоны с определенным статусом
+     * @param zone Зона актора
+     * @param status Статус региона
+     * @returns Массив регионов с указанным статусом
+     */
+    getRegionsByStatus(zone: ActorZone, status: RegionStatus): Region[];
+
+    /**
+     * Получает соседние регионы зоны с определенным статусом
+     * @param zone Зона актора
+     * @param status Статус региона
+     * @returns Массив соседних регионов с указанным статусом
+     */
+    getNeighbourRegionsByStatus(zone: ActorZone, status: RegionStatus): Region[];
+
+    /**
+     * Получает собственные регионы зоны (принадлежащие фракции)
+     * @param zone Зона актора
+     * @returns Массив регионов, принадлежащих фракции
+     */
+    getOwnRegions(zone: ActorZone): Region[];
+
+    /**
+     * Получает соседних акторов зоны
+     * @param zone Зона актора
+     * @param type Тип актора (по умолчанию военный)
+     * @returns Массив соседних фракций
+     */
+    getNeighbourActors(zone: ActorZone, type?: ActorType): Faction[];
 } 

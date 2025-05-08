@@ -41,16 +41,16 @@ export class BarrierTracker {
      * @throws Error если не удалось создать трек
      */
     trackEvent(event: BarrierEvent, initializer: Faction): void {
+        let firstActor = initializer;
+        let secondActor: Faction | undefined;
+        let territory: Region | undefined;
+        
         try {
-            const firstActor = initializer;
             if (!firstActor) {
                 throw new Error('No initializer available');
             }
             
             // Определяем территорию в зависимости от типа события
-            let territory: Region;
-            let secondActor: Faction | undefined;
-            
             switch (event.actionType) {
                 case ActionType.CAPTURE:
                     // Для захвата используем открытые регионы из зоны актора
@@ -88,41 +88,109 @@ export class BarrierTracker {
                     this.ctx.regionService.updateRegionStatus(territory.id, RegionStatus.WAR);
                     break;
                 
-                default:
-                    // Для других типов событий используем стандартную логику территориальных правил
-                    const secondRule = event.actorRule[1];
-                    const neighbourActors = this.getNeighbourActors(secondRule, firstActor);
-                    if (neighbourActors.length === 0) {
-                        throw new Error(`No available neighbour actors for rule ${secondRule} for event ${event.id} firstActor: ${firstActor.id}`);
+                case ActionType.WRECKAGE:
+                    // Для WRECKAGE ищем регионы со статусом WRECKAGE среди соседей или в зоне инициатора
+                    const wreckageZone = this.ctx.actorZoneService.getZoneByFactionId(firstActor.id);
+                    if (!wreckageZone) {
+                        throw new Error(`Actor zone not found for faction ${firstActor.id}`);
+                    }
+
+                    // Получаем все регионы в зоне актора со статусом WRECKAGE
+                    const zoneWreckageRegions = this.ctx.actorZoneService.getRegionsByStatus(wreckageZone, RegionStatus.WRECKAGE);
+                    
+                    // Получаем соседние регионы со статусом WRECKAGE
+                    const neighbourWreckageRegions = this.ctx.actorZoneService.getNeighbourRegionsByStatus(wreckageZone, RegionStatus.WRECKAGE);
+                    
+                    // Объединяем регионы и выбираем случайный
+                    const availableWreckageRegions = [...zoneWreckageRegions, ...neighbourWreckageRegions];
+                    if (availableWreckageRegions.length === 0) {
+                        console.warn(`No wreckage regions available for faction ${firstActor.id}, skipping turn`);
+                        return;
                     }
                     
-                    secondActor = neighbourActors[BarrierRandom.getRandomInt(neighbourActors.length)];
-                    const actorRegions = [firstActor.baseRegion, secondActor.baseRegion];
-                    territory = getTerritoryByRule(actorRegions, event.territoryRule);
+                    territory = availableWreckageRegions[BarrierRandom.getRandomInt(availableWreckageRegions.length)];
+                    secondActor = territory.faction ?? territory ? BarrierRandom.selectRandom(this.ctx.actorEngine.getActorsByBaseRegion(territory.id)) : undefined;
+                    break;
+
+                case ActionType.PEACE:
+                    if (firstActor.military) {
+                        // Для военных фракций
+                        const zone = this.ctx.actorZoneService.getZoneByFactionId(firstActor.id);
+                        if (!zone) {
+                            throw new Error(`Zone not found for military faction ${firstActor.id}`);
+                        }
+
+                        // Получаем свои регионы и открытые регионы соседей
+                        const ownRegions = this.ctx.actorZoneService.getOwnRegions(zone);
+                        const openRegions = this.ctx.actorZoneService.getOpenRegions(zone);
+
+                        const availableRegions = [...ownRegions, ...openRegions];
+                        if (availableRegions.length === 0) {
+                            throw new Error(`No available regions for peace event for military faction ${firstActor.id}`);
+                        }
+
+                        territory = BarrierRandom.selectRandom(availableRegions);
+
+                    } else {
+                        // Для не военных фракций
+                        // Получаем базовый регион актора
+                        const baseRegion = this.ctx.regionService.getRegionById(firstActor.baseRegion);
+                        if (!baseRegion) {
+                            throw new Error(`Base region not found for faction ${firstActor.id}`);
+                        }
+
+                        // Получаем соседние свободные регионы
+                        const neighbourRegions = this.ctx.regionService.getNeighbourRegions(baseRegion.id)
+                            .filter(region => !region.faction);
+
+                        const availableRegions = [baseRegion, ...neighbourRegions];
+                        if (availableRegions.length === 0) {
+                            throw new Error(`No available regions for peace event for faction ${firstActor.id}`);
+                        }
+
+                        territory = BarrierRandom.selectRandom(availableRegions);
+                    }
+                    break;
+
+                case ActionType.TRADE:
+                case ActionType.DIPLOMACY:
+                case ActionType.ESPIONAGE:
+                    // Для остальных событий используем стандартную логику территориальных правил
+                    const secondRule = event.actorRule[1];
+                    if(firstActor.military) {
+                        // работаем через зоны
+                        const zone = this.ctx.actorZoneService.getZoneByFactionId(firstActor.id);
+                        if(!zone) {
+                            throw new Error(`Zone not found for faction ${firstActor.id}`);
+                        }
+                        const neighbourActors = this.ctx.actorZoneService.getNeighbourActorsByType(zone, secondRule);
+                        if(neighbourActors.length === 0) {
+                            throw new Error(`No available neighbour actors for rule ${secondRule} for event ${event.id} firstActor: ${firstActor.id}`);
+                        }
+                        secondActor = neighbourActors[BarrierRandom.getRandomInt(neighbourActors.length)];
+                        
+                        // Определяем территорию для военных через фронтовые регионы
+                        const frontRegions = this.ctx.actorZoneService.getFrontRegions(zone);
+                        if (frontRegions.length > 0) {
+                            territory = BarrierRandom.selectRandom(frontRegions);
+                        } else {
+                            // Если нет фронтовых регионов, используем базовые регионы
+                            const actorRegions = [firstActor.baseRegion, secondActor.baseRegion];
+                            territory = getTerritoryByRule(actorRegions, event.territoryRule);
+                        }
+                    } else {
+                        // работаем через соседние регионы для гражданских
+                        const neighbourActors = this.getNeighbourActors(secondRule, firstActor);
+                        if (neighbourActors.length === 0) {
+                            throw new Error(`No available neighbour actors for rule ${secondRule} for event ${event.id} firstActor: ${firstActor.id}`);
+                        }
+                        
+                        secondActor = BarrierRandom.selectRandom(neighbourActors);
+                        const actorRegions = [firstActor.baseRegion, secondActor.baseRegion];
+                        territory = getTerritoryByRule(actorRegions, event.territoryRule);
+                    }
                     break;
             }
-            
-            /**
-             * @todo: Логика определения второго актора для CAPTURE и WAR событий
-             * - Если территория принадлежит другой фракции, использовать её
-             * - Иначе искать актора в соседних регионах
-             */
-            // // Для CAPTURE и WAR событий - определяем второго актора если он еще не определен
-            // if (!secondActor) {
-            //     const secondRule = event.actorRule[1];
-                
-            //     if (territory.faction && territory.faction.id !== firstActor.id) {
-            //         // Если территория принадлежит другой фракции, используем её
-            //         secondActor = territory.faction;
-            //     } else {
-            //         // Иначе ищем актора в соседних регионах
-            //         const neighbourActors = this.getNeighbourActors(secondRule, firstActor);
-            //         if (neighbourActors.length === 0) {
-            //             throw new Error(`No available neighbour actors for rule ${secondRule}`);
-            //         }
-            //         secondActor = neighbourActors[BarrierRandom.getRandomInt(neighbourActors.length)];
-            //     }
-            // }
             
             const actors = [firstActor, secondActor].filter(Boolean);
            
@@ -136,8 +204,17 @@ export class BarrierTracker {
             
             this.#addTrack(track);
         } catch (error) {
-            console.error('Failed to track event:', error);
-            throw error;
+            console.error('Failed to track event:', {
+                error: error.message,
+                stack: error.stack,
+                eventId: event?.id,
+                firstActor: firstActor?.id,
+                secondActor: secondActor?.id,
+                territory: territory?.id
+            });
+            // Пропускаем ход при ошибке
+            console.warn('Skipping turn due to tracking error');
+            return; // Выходим из функции без выброса ошибки
         }
     }
 
