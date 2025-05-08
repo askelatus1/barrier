@@ -76,11 +76,6 @@ export interface IRegionService {
      */
     getMilitaryRegions(): Region[];
 
-    /**
-     * Retrieves all civilian regions
-     * @returns Array of civilian regions
-     */
-    getCivilianRegions(): Region[];
 }
 
 /**

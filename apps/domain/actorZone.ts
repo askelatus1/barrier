@@ -12,7 +12,7 @@ export class ActorZoneService implements IActorZoneService {
     }
 
     private initializeZones(): void {
-        const factions = this.ctx.actorEngine.getActorsAll().filter(actor => actor.military);
+        const factions = this.ctx.actorEngine.getActorsAll().filter(actor => actor.type === ActorType.MILITARY);
         factions.forEach(faction => {
             const regions = this.ctx.regionService.getRegionsByFaction(faction.id);
             const zone: ActorZone = {
@@ -102,8 +102,8 @@ export class ActorZoneService implements IActorZoneService {
                 .flatMap(region => {
                     return allActors.filter(actor => 
                         actor.baseRegion === region.id && 
-                        ((zone.faction.terror && actor.terror) || 
-                         (!zone.faction.terror && !actor.military && !actor.terror))
+                        ((zone.faction.type === ActorType.TERRORIST && actor.type === ActorType.TERRORIST) || 
+                         (zone.faction.type !== ActorType.TERRORIST && actor.type === ActorType.CIVILIAN))
                     );
                 });
         }
@@ -137,15 +137,6 @@ export class ActorZoneService implements IActorZoneService {
     getNeighbourActorsByType(zone: ActorZone, type: ActorType): Faction[] {
         const neighbours = this.getNeighbourActors(zone, type);
         
-        return neighbours.filter(actor => {
-            if (type === ActorType.MILITARY) {
-                return actor.military;
-            } else if (type === ActorType.CIVILIAN) {
-                return !actor.military && !actor.terror;
-            } else if (type === ActorType.TERRORIST) {
-                return actor.terror;
-            }
-            return false;
-        });
+        return neighbours.filter(actor => actor.type === type);
     }
 } 

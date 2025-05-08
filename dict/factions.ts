@@ -1,114 +1,115 @@
 import {Faction} from "../interfaces";
+import {ActorType} from "./constants";
 
 export const faction: Faction[] = [
     {
         id: 'monolith',
         name: 'ЧВК "монолит"',
         baseRegion: 'moldavka',
-        military: true,
-        terror: false,
+        type: ActorType.MILITARY
     },
     {
         id: 'sin',
         name:'Грех',
         baseRegion:'decabristov',
-        military: true,
-        terror: false,
+        type: ActorType.MILITARY
     },
     {
         id: 'skyline',
         name: 'Скайлайн',
         baseRegion:'obrazcovo',
-        military: true,
-        terror: false,
+        type: ActorType.MILITARY
     },
     {
         id: 'moldavka_civ',
         name: 'Жители Молдавки',
         baseRegion: 'moldavka',
-        military: false,
-        terror: false,
+        type: ActorType.CIVILIAN
     },
     {
         id: 'decabristov_civ',
         name: 'Жители Декабристов',
         baseRegion: 'decabristov',
-        military: false,
-        terror: false,
+        type: ActorType.CIVILIAN
     },
     {
         id: 'obrazcovo_civ',
         name: 'Жители Образцовской',
         baseRegion: 'obrazcovo',
-        military: false,
-        terror: false,
+        type: ActorType.CIVILIAN
     },
     {
         id: 'mongora_civ',
         name: 'Жители Монгоры',
         baseRegion: 'mongora',
-        military: false,
-        terror: false,
+        type: ActorType.CIVILIAN
     },
     {
         id: 'shanghai_civ',
         name: 'Жители Шанхая',
         baseRegion: 'shanghai',
-        military: false,
-        terror: false,
+        type: ActorType.CIVILIAN
     },
     {
         id: 'cerdavino_civ',
         name: 'Жители Сердавино',
         baseRegion: 'cerdavino',
-        military: false,
-        terror: false,
+        type: ActorType.CIVILIAN
     },
     {
         id: 'varlamono_civ',
         name: 'Жители Варламова',
         baseRegion: 'varlamono',
-        military: false,
-        terror: false,
+        type: ActorType.CIVILIAN
     },
     {
         id: 'rudnik_civ',
         name: 'Жители Рудника',
         baseRegion: 'rudnik',
-        military: false,
-        terror: false,
+        type: ActorType.CIVILIAN
     },
     {
         id: 'krista_civ',
         name: 'Жители Кристы',
         baseRegion: 'krista',
-        military: false,
-        terror: false,
+        type: ActorType.CIVILIAN
     },
     {
         id: 'center_civ',
         name: 'Жители Центра',
         baseRegion: 'center',
-        military: false,
-        terror: false,
+        type: ActorType.CIVILIAN
     },
     {
         id: 'miltown_civ',
         name: 'Жители Военного городка',
         baseRegion: 'miltown',
-        military: false,
-        terror: false,
+        type: ActorType.CIVILIAN
     },
     {
         id: 'piter_civ',
         name: 'Жители Питера',
         baseRegion: 'Piter',
-        military: false,
-        terror: false,
+        type: ActorType.CIVILIAN
     }
 ];
 
-export type FactionType = 'monolith' | 'sin' | 'skyline' | 'moldavka_civ' | 'decabristov_civ' | 'obrazcovo_civ' | 'mongora_civ' | 'shanghai_civ' | 'cerdavino_civ' | 'varlamono_civ' | 'rudnik_civ' | 'krista_civ' | 'center_civ' | 'miltown_civ' | 'piter_civ';
+export type FactionType = 
+    | 'monolith'
+    | 'sin'
+    | 'skyline'
+    | 'moldavka_civ'
+    | 'decabristov_civ'
+    | 'obrazcovo_civ'
+    | 'mongora_civ'
+    | 'shanghai_civ'
+    | 'cerdavino_civ'
+    | 'varlamono_civ'
+    | 'rudnik_civ'
+    | 'krista_civ'
+    | 'center_civ'
+    | 'miltown_civ'
+    | 'piter_civ';
 
 import {Region} from "../interfaces";
 

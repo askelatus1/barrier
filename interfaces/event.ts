@@ -1,12 +1,11 @@
 import {NotifyTemplate} from "./notify";
-import {EventType, ActorType, TerritoryRuleType} from "../dict/constants";
-
+import {EventType, TerritoryRuleType, ActorRuleType} from "../dict/constants";
 export interface BarrierEvent {
     id: string;
     type: EventType;
     actionType: ActionType;
     title: string;
-    actorRule: ActorType[];
+    actorRule: [ActorRuleType, ActorRuleType]; // Всегда ровно два правила: для инициатора и цели
     territoryRule: TerritoryRuleType;
     notify?: NotifyTemplate;
 }

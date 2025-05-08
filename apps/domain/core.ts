@@ -37,9 +37,7 @@ export class GameCore {
         const actor = BarrierRandom.selectRandom(actors);
 
         // Определяем тип актора
-        const actorType = actor.military ? ActorType.MILITARY : 
-                         actor.terror ? ActorType.TERRORIST : 
-                         ActorType.CIVILIAN;
+        const actorType = actor.type;
     
         switch (actorType) {
             case ActorType.MILITARY: {
@@ -81,12 +79,7 @@ export class GameCore {
                 // Для террористов добавляем события типа WAR, CAPTURE и WRECKAGE
                 availableEvents.push(
                     ...this.ctx.eventEngine.getEventsByActorType(actorType)
-                        .filter(event => 
-                            event.actionType === ActionType.WAR || 
-                            event.actionType === ActionType.CAPTURE ||
-                            event.actionType === ActionType.WRECKAGE ||
-                            event.actionType === ActionType.ESPIONAGE
-                        )
+                        .filter(event => false) // TODO: Добавить события для террористов
                 );
                 break;
             }
@@ -94,11 +87,7 @@ export class GameCore {
                 // Для гражданских добавляем мирные события и торговлю
                 availableEvents.push(
                     ...this.ctx.eventEngine.getEventsByActorType(actorType)
-                        .filter(event => 
-                            event.actionType === ActionType.PEACE ||
-                            event.actionType === ActionType.TRADE ||
-                            event.actionType === ActionType.DIPLOMACY
-                        )
+                        .filter(event => false) // TODO: Добавить события для гражданских
                 );
                 break;
             }

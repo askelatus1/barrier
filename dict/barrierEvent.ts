@@ -1,5 +1,5 @@
 import {BarrierContext, BarrierEvent, Faction, ActionType, Track} from "../interfaces";
-import {EventType, ActorType, TerritoryRuleType} from "./constants";
+import {EventType, TerritoryRuleType, ActorRuleType} from "./constants";
 
 export const barrierEvent: BarrierEvent[] = [
     {
@@ -7,7 +7,7 @@ export const barrierEvent: BarrierEvent[] = [
         title: 'атака на пехоту',
         type: EventType.EVENT,
         actionType: ActionType.WAR,
-        actorRule: [ActorType.MILITARY, ActorType.MILITARY],
+        actorRule: [ActorRuleType.MILITARY, ActorRuleType.MILITARY],
         territoryRule: TerritoryRuleType.BOTH,
         notify: {
             start: (ctx: BarrierContext, track: Track) => {
@@ -33,7 +33,7 @@ export const barrierEvent: BarrierEvent[] = [
         title: 'ликвидация офицера',
         type: EventType.EVENT,
         actionType: ActionType.WAR,
-        actorRule: [ActorType.MILITARY, ActorType.MILITARY],
+        actorRule: [ActorRuleType.MILITARY, ActorRuleType.MILITARY],
         territoryRule: TerritoryRuleType.BOTH,
         notify: {
             start: (ctx: BarrierContext,  track: Track) => {
@@ -59,7 +59,7 @@ export const barrierEvent: BarrierEvent[] = [
         title: 'атака на технику',
         type: EventType.EVENT,
         actionType: ActionType.WAR,
-        actorRule: [ActorType.MILITARY, ActorType.MILITARY],
+        actorRule: [ActorRuleType.MILITARY, ActorRuleType.MILITARY],
         territoryRule: TerritoryRuleType.BOTH,
         notify: {
             start: (ctx: BarrierContext,  track: Track) => {
@@ -85,7 +85,7 @@ export const barrierEvent: BarrierEvent[] = [
         title: 'атака дроном-камикадзе',
         type: EventType.EVENT,
         actionType: ActionType.WAR,
-        actorRule: [ActorType.MILITARY, ActorType.MILITARY],
+        actorRule: [ActorRuleType.MILITARY, ActorRuleType.MILITARY],
         territoryRule: TerritoryRuleType.VICTIM,
         notify: {
             start: (ctx: BarrierContext,  track: Track) => {
@@ -111,7 +111,7 @@ export const barrierEvent: BarrierEvent[] = [
         title: 'подрыв оружейного склада',
         type: EventType.EVENT,
         actionType: ActionType.WAR,
-        actorRule: [ActorType.MILITARY, ActorType.MILITARY],
+        actorRule: [ActorRuleType.MILITARY, ActorRuleType.MILITARY],
         territoryRule: TerritoryRuleType.VICTIM,
         notify: {
             start: (ctx: BarrierContext,  track: Track) => {
@@ -137,7 +137,7 @@ export const barrierEvent: BarrierEvent[] = [
         title: 'установление торговых отношений',
         type: EventType.EVENT,
         actionType: ActionType.TRADE,
-        actorRule: [ActorType.CIVILIAN, ActorType.CIVILIAN],
+        actorRule: [ActorRuleType.CIVILIAN, ActorRuleType.CIVILIAN],
         territoryRule: TerritoryRuleType.BOTH,
         notify: {
             start: (ctx: BarrierContext,  track: Track) => {
@@ -159,7 +159,7 @@ export const barrierEvent: BarrierEvent[] = [
         title: 'работают артилерией по позициям',
         type: EventType.EVENT,
         actionType: ActionType.WAR,
-        actorRule: [ActorType.MILITARY, ActorType.MILITARY],
+        actorRule: [ActorRuleType.MILITARY, ActorRuleType.MILITARY],
         territoryRule: TerritoryRuleType.BOTH,
         notify: {
             start: (ctx: BarrierContext,  track: Track) => {
@@ -185,7 +185,7 @@ export const barrierEvent: BarrierEvent[] = [
         title: 'наладили научные отношения',
         type: EventType.EVENT,
         actionType: ActionType.DIPLOMACY,
-        actorRule: [ActorType.MILITARY, ActorType.MILITARY],
+        actorRule: [ActorRuleType.MILITARY, ActorRuleType.MILITARY],
         territoryRule: TerritoryRuleType.BOTH,
         notify: {
             start: (ctx: BarrierContext,  track: Track) => {
@@ -208,7 +208,7 @@ export const barrierEvent: BarrierEvent[] = [
         title: 'проводят гумунитарную помощь',
         type: EventType.EVENT,
         actionType: ActionType.PEACE,
-        actorRule: [ActorType.MILITARY, ActorType.CIVILIAN],
+        actorRule: [ActorRuleType.MILITARY, ActorRuleType.CIVILIAN],
         territoryRule: TerritoryRuleType.BOTH,
         notify: {
             start: (ctx: BarrierContext,  track: Track) => {

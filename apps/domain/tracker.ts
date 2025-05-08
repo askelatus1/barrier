@@ -1,7 +1,7 @@
 import {BarrierContext, BarrierEvent, Track, Faction, Region} from "../../interfaces";
 import {getTerritoryByRule} from "./rules/territoryRule";
 import {BarrierRandom} from "./random";
-import {TIMEOUTS, ActorType, NotifyType, RegionStatus} from "../../dict/constants";
+import {TIMEOUTS, ActorType, NotifyType, RegionStatus, ActorRuleType} from "../../dict/constants";
 import {ActionType} from "../../interfaces/event";
 
 /**
@@ -113,7 +113,7 @@ export class BarrierTracker {
                     break;
 
                 case ActionType.PEACE:
-                    if (firstActor.military) {
+                    if (firstActor.type === ActorType.MILITARY) {
                         // Для военных фракций
                         const zone = this.ctx.actorZoneService.getZoneByFactionId(firstActor.id);
                         if (!zone) {
@@ -157,16 +157,36 @@ export class BarrierTracker {
                 case ActionType.ESPIONAGE:
                     // Для остальных событий используем стандартную логику территориальных правил
                     const secondRule = event.actorRule[1];
-                    if(firstActor.military) {
+                    if(firstActor.type === ActorType.MILITARY) {
                         // работаем через зоны
                         const zone = this.ctx.actorZoneService.getZoneByFactionId(firstActor.id);
                         if(!zone) {
                             throw new Error(`Zone not found for faction ${firstActor.id}`);
                         }
-                        const neighbourActors = this.ctx.actorZoneService.getNeighbourActorsByType(zone, secondRule);
+
+                        // Получаем соседей, соответствующих правилу
+                        const neighbourActors = this.ctx.actorEngine.getActorsAll()
+                            .filter(actor => {
+                                switch(secondRule) {
+                                    case ActorRuleType.MILITARY:
+                                        return actor.type === ActorType.MILITARY;
+                                    case ActorRuleType.CIVILIAN:
+                                        return actor.type === ActorType.CIVILIAN;
+                                    case ActorRuleType.TERRORIST:
+                                        return actor.type === ActorType.TERRORIST;
+                                    case ActorRuleType.ARMORED:
+                                        return actor.type === ActorType.MILITARY || actor.type === ActorType.TERRORIST;
+                                    case ActorRuleType.ALL:
+                                        return true;
+                                    case ActorRuleType.NONE:
+                                        return false;
+                                }
+                            });
+
                         if(neighbourActors.length === 0) {
                             throw new Error(`No available neighbour actors for rule ${secondRule} for event ${event.id} firstActor: ${firstActor.id}`);
                         }
+
                         secondActor = neighbourActors[BarrierRandom.getRandomInt(neighbourActors.length)];
                         
                         // Определяем территорию для военных через фронтовые регионы
@@ -180,7 +200,30 @@ export class BarrierTracker {
                         }
                     } else {
                         // работаем через соседние регионы для гражданских
-                        const neighbourActors = this.getNeighbourActors(secondRule, firstActor);
+                        const baseRegion = this.ctx.regionService.getRegionById(firstActor.baseRegion);
+                        if (!baseRegion) {
+                            throw new Error(`Base region not found for faction ${firstActor.id}`);
+                        }
+
+                        // Получаем соседей, соответствующих правилу
+                        const neighbourActors = this.ctx.actorEngine.getActorsByBaseRegion(baseRegion.id)
+                            .filter(actor => {
+                                switch(secondRule) {
+                                    case ActorRuleType.MILITARY:
+                                        return actor.type === ActorType.MILITARY;
+                                    case ActorRuleType.CIVILIAN:
+                                        return actor.type === ActorType.CIVILIAN;
+                                    case ActorRuleType.TERRORIST:
+                                        return actor.type === ActorType.TERRORIST;
+                                    case ActorRuleType.ARMORED:
+                                        return actor.type === ActorType.MILITARY || actor.type === ActorType.TERRORIST;
+                                    case ActorRuleType.ALL:
+                                        return true;
+                                    case ActorRuleType.NONE:
+                                        return false;
+                                }
+                            });
+
                         if (neighbourActors.length === 0) {
                             throw new Error(`No available neighbour actors for rule ${secondRule} for event ${event.id} firstActor: ${firstActor.id}`);
                         }

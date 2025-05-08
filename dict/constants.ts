@@ -4,8 +4,27 @@ export enum EventType {
 
 export enum ActorType {
     MILITARY = 'military',
-    CIVILIAN = 'civilian',
+    CIVILIAN = 'civilian', 
     TERRORIST = 'terrorist'
+}
+
+export enum ActorRuleType {
+    MILITARY = 'military',
+    CIVILIAN = 'civilian', 
+    TERRORIST = 'terrorist',
+    ARMORED = 'armored', // MILITARY + TERRORIST
+    ALL = 'all',
+    NONE = 'none'
+}
+
+// Тип для проверки соответствия ActorType правилу ActorRuleType
+export type ActorRuleTypeMap = {
+    [ActorRuleType.MILITARY]: ActorType.MILITARY;
+    [ActorRuleType.CIVILIAN]: ActorType.CIVILIAN;
+    [ActorRuleType.TERRORIST]: ActorType.TERRORIST;
+    [ActorRuleType.ARMORED]: ActorType.MILITARY | ActorType.TERRORIST;
+    [ActorRuleType.ALL]: ActorType;
+    [ActorRuleType.NONE]: never;
 }
 
 export enum TerritoryRuleType {

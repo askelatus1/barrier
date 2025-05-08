@@ -1,4 +1,5 @@
 import {RegionsType} from "../dict/regionMap";
+import {ActorType} from "../dict/constants";
 
 export type FactionId = string;
 
@@ -6,15 +7,18 @@ export interface Faction {
     id: FactionId;
     name: string;
     baseRegion: RegionsType;
-    military: boolean;
-    terror: boolean;
+    type: ActorType;
 }
 
 export type MilitaryFaction = Faction & {
-    military: true;
+    type: ActorType.MILITARY;
 }
 
 export type CivilianFaction = Faction & {
-    military: false;
+    type: ActorType.CIVILIAN;
+}
+
+export type TerroristFaction = Faction & {
+    type: ActorType.TERRORIST;
 }
 

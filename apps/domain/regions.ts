@@ -1,6 +1,7 @@
 import {BarrierContext, Region} from "../../interfaces";
 import {regionMap} from "../../dict/regionMap";
 import {IRegionService} from "../../interfaces/services";
+import {ActorType} from "../../dict/constants";
 
 export class RegionService implements IRegionService {
     private regionPool: Map<string, Region> = new Map();
@@ -63,10 +64,6 @@ export class RegionService implements IRegionService {
     }
 
     getMilitaryRegions(): Region[] {
-        return this.getRegionsAll().filter(region => region.faction?.military === true);
-    }
-
-    getCivilianRegions(): Region[] {
-        return this.getRegionsAll().filter(region => !region.faction?.military);
+        return this.getRegionsAll().filter(region => region.faction?.type === ActorType.MILITARY);
     }
 } 

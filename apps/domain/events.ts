@@ -1,7 +1,7 @@
 import {BarrierContext, BarrierEvent, Track, Faction} from "../../interfaces";
 import {barrierEvent} from "../../dict/barrierEvent";
 import {BarrierRandom} from "./random";
-import {ActorType} from "../../dict/constants";
+import {ActorType, ActorRuleType} from "../../dict/constants";
 
 export class EventEngine {
     constructor(private ctx: BarrierContext) {
@@ -9,12 +9,15 @@ export class EventEngine {
     }
 
     createEventById(id: string, initializer: Faction): void {
-        const ev = barrierEvent.find(event => event.id === id);
-        this.ctx.tracker.trackEvent(ev, initializer );
+        const event = this.getEventById(id);
+        if (!event) {
+            throw new Error(`Event ${id} not found`);
+        }
+        this.ctx.tracker.trackEvent(event, initializer);
     }
 
-    getEventById(id: string): BarrierEvent {
-        return barrierEvent.find(e => e.id === id);
+    getEventById(id: string): BarrierEvent | undefined {
+        return barrierEvent.find(event => event.id === id);
     }
 
     getEventByTrack(track: Track): BarrierEvent {
@@ -34,10 +37,26 @@ export class EventEngine {
      * @param actorType Тип актора
      * @returns Массив событий для указанного типа актора
      */
-    getEventsByActorType(actorType: ActorType): BarrierEvent[] {
-        return barrierEvent.filter(event => 
-            event.actorRule.some(rule => rule === actorType)
-        );
+    getEventsByActorType(type: ActorType): BarrierEvent[] {
+        return barrierEvent.filter(event => {
+            const targetActorRule = event.actorRule[0] ?? ActorRuleType.NONE;
+            switch(targetActorRule) {
+                case ActorRuleType.MILITARY:
+                    return type === ActorType.MILITARY;
+                case ActorRuleType.CIVILIAN:
+                    return type === ActorType.CIVILIAN;
+                case ActorRuleType.TERRORIST:
+                    return type === ActorType.TERRORIST;
+                case ActorRuleType.ARMORED:
+                    return type === ActorType.MILITARY || type === ActorType.TERRORIST;
+                case ActorRuleType.ALL:
+                    return true;
+                case ActorRuleType.NONE:
+                    return false;
+                default:
+                    return false;
+            }
+        });
     }
 
     /**
@@ -58,26 +77,4 @@ export class EventEngine {
     hasEvent(id: string): boolean {
         return barrierEvent.some(event => event.id === id);
     }
-
-    /**
-     * Получает события, доступные для указанных акторов
-     * @param actors Массив акторов
-     * @returns Массив доступных событий
-     */
-    getEventsByActors(actors: Faction[]): BarrierEvent[] {
-        return barrierEvent.filter(event => {
-            const actorTypes = actors.map(actor => {
-                switch (true) {
-                    case actor.military && actor.terror:
-                        return ActorType.TERRORIST;
-                    case actor.military:
-                        return ActorType.MILITARY;
-                    default:
-                        return ActorType.CIVILIAN;
-                }
-            });
-            return event.actorRule.every(rule => actorTypes.includes(rule));
-        });
-    }
-    
 }

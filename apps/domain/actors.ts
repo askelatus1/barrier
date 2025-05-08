@@ -3,6 +3,7 @@ import {faction} from "../../dict/factions";
 import {getMilitary, getCivilian, getTerrors} from "./rules/actorRules";
 import {getRegionByFaction, getRegionById} from "./rules/territoryRule";
 import {IActorEngine} from "../../interfaces/services";
+import { ActorType } from "../../dict/constants";
 
 export class ActorEngine implements IActorEngine {
     private actorPool: Map<string, Faction> = new Map();
@@ -14,7 +15,7 @@ export class ActorEngine implements IActorEngine {
 
     private initializeActors(): void {
         faction.forEach(actor => {
-            if (actor.military) {
+            if (actor.type === ActorType.MILITARY) {
                 const region = getRegionById(actor.baseRegion);
                 if (region) {
                     region.faction = actor as MilitaryFaction;
