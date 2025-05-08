@@ -1,4 +1,4 @@
-import {BarrierContext, BarrierEvent, Track, Faction, Region} from "../../interfaces";
+import {BarrierContext, BarrierEvent, Track, Faction, Region, MilitaryFaction} from "../../interfaces";
 import {getTerritoryByRule} from "./rules/territoryRule";
 import {BarrierRandom} from "./random";
 import {TIMEOUTS, ActorType, NotifyType, RegionStatus, ActorRuleType} from "../../dict/constants";
@@ -253,8 +253,19 @@ export class BarrierTracker {
         // Randomly choose between resolve and reject
         const status = BarrierRandom.getRandomInt(2) === 0 ? 'resolve' : 'reject';
         track.status = status;
+        const actor = track.actors[0];
         
         const notifyType = status === 'resolve' ? NotifyType.RESOLVE : NotifyType.REJECT;
+        // Для события захвата при успешном выполнении устанавливаем фракцию
+        const event = this.ctx.eventEngine.getEventById(track.eventId);
+        if (event?.actionType === ActionType.CAPTURE && status === 'resolve' && track.territory) {
+            // Инициализируем фракцию в регионе
+            const initiator = track.actors[0];
+            if (initiator) {
+                this.ctx.regionService.setFactionToRegion(track.territory.id, initiator as MilitaryFaction);
+                this.ctx.actorZoneService.refreshZone(this.ctx.actorZoneService.getZoneByFactionId(actor.id));                
+            }
+        }
         console.log(`track ${track.id} ending with status: ${status}`);
         this.ctx.notifier.notify(track, notifyType);
         this.#removeTrack(track);

@@ -14,7 +14,7 @@ export class ActorZoneService implements IActorZoneService {
     private initializeZones(): void {
         const factions = this.ctx.actorEngine.getActorsAll().filter(actor => actor.type === ActorType.MILITARY);
         factions.forEach(faction => {
-            const regions = this.ctx.regionService.getRegionsByFaction(faction.id);
+            const regions: Region[] = [];
             const zone: ActorZone = {
                 faction,
                 regions,
@@ -28,6 +28,7 @@ export class ActorZoneService implements IActorZoneService {
     }
 
     private updateZone(zone: ActorZone): void {
+        zone.regions = this.ctx.regionService.getRegionsByFaction(zone.faction.id);
         zone.rearRegions = this.getRearRegions(zone);
         zone.frontRegions = this.getFrontRegions(zone);
         zone.openRegions = this.getOpenRegions(zone);
@@ -147,5 +148,9 @@ export class ActorZoneService implements IActorZoneService {
      */
     getEmptyNeighbourRegions(zone: ActorZone): Region[] {
         return this.getNeighbourRegions(zone).filter(region => !region.faction);
+    }
+
+    refreshZone(zone: ActorZone): void {
+        this.updateZone(zone);
     }
 } 

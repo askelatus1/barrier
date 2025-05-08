@@ -262,4 +262,10 @@ export interface IActorZoneService {
      * @returns Массив пустых соседних регионов
      */
     getEmptyNeighbourRegions(zone: ActorZone): Region[];
+
+    /**
+     * Обновляет состояние зоны актора
+     * @param zone Зона актора для обновления
+     */
+    refreshZone(zone: ActorZone): void;
 } 
