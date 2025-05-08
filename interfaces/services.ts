@@ -255,4 +255,11 @@ export interface IActorZoneService {
      * @returns Массив соседних фракций
      */
     getNeighbourActors(zone: ActorZone, type?: ActorType): Faction[];
+
+    /**
+     * Получает соседние пустые регионы (без фракции)
+     * @param zone Зона актора
+     * @returns Массив пустых соседних регионов
+     */
+    getEmptyNeighbourRegions(zone: ActorZone): Region[];
 } 

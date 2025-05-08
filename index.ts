@@ -26,5 +26,5 @@ new RegionService(ctx);
 new ActorEngine(ctx);
 new ActorZoneService(ctx);
 
-ctx.core.start();
-// ctx.eventEngine.createEventById('humanitarian', faction.find(f => f.id === 'center_civ'));
+// ctx.core.start();
+ctx.eventEngine.createEventById('capture_port', faction.find(f => f.id === 'sin'));

@@ -53,19 +53,19 @@ export class BarrierTracker {
             // Определяем территорию в зависимости от типа события
             switch (event.actionType) {
                 case ActionType.CAPTURE:
-                    // Для захвата используем открытые регионы из зоны актора
                     const actorZone = this.ctx.actorZoneService.getZoneByFactionId(firstActor.id);
                     if (!actorZone) {
                         throw new Error(`Actor zone not found for faction ${firstActor.id}`);
                     }
-                    
-                    const openRegions = this.ctx.actorZoneService.getOpenRegions(actorZone);
-                    if (openRegions.length === 0) {
-                        throw new Error(`No open regions available for faction ${firstActor.id}`);
+
+                    // Получаем пустые соседние регионы
+                    const emptyNeighbourRegions = this.ctx.actorZoneService.getEmptyNeighbourRegions(actorZone);
+                    if (emptyNeighbourRegions.length === 0) {
+                        throw new Error(`No empty neighbour regions available for faction ${firstActor.id}`);
                     }
                     
-                    // Выбираем случайный открытый регион
-                    territory = openRegions[BarrierRandom.getRandomInt(openRegions.length)];
+                    // Выбираем случайный пустой соседний регион
+                    territory = emptyNeighbourRegions[BarrierRandom.getRandomInt(emptyNeighbourRegions.length)];
                     break;
                 
                 case ActionType.WAR:

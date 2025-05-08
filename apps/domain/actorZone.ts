@@ -139,4 +139,13 @@ export class ActorZoneService implements IActorZoneService {
         
         return neighbours.filter(actor => actor.type === type);
     }
+
+    /**
+     * Получает соседние пустые регионы (без фракции)
+     * @param zone Зона актора
+     * @returns Массив пустых соседних регионов
+     */
+    getEmptyNeighbourRegions(zone: ActorZone): Region[] {
+        return this.getNeighbourRegions(zone).filter(region => !region.faction);
+    }
 } 
