@@ -18,7 +18,7 @@ export const captureBarrierEvents: BarrierEvent[] = [
             resolve: (ctx: BarrierContext, track: Track) => {
                 const [init, victim]: Faction[] = track.actors;
                 const territory = track.territory;
-                return `Войска ${init.name} успешно захватили военную базу (${victim.name}) в секторе ${territory.title}`
+                return `Войска ${init.name} успешно взяли в кольцо военную базу (${victim.name}) в секторе ${territory.title}`
             },
             reject: (ctx: BarrierContext, track: Track) => {
                 const [init, victim]: Faction[] = track.actors;
@@ -29,8 +29,8 @@ export const captureBarrierEvents: BarrierEvent[] = [
     },
 
     {
-        id: 'capture_city',
-        title: 'захват города',
+        id: 'capture_region',
+        title: 'захват региона',
         type: EventType.EVENT,
         actionType: ActionType.CAPTURE,
         actorRule: [ActorRuleType.MILITARY, ActorRuleType.MILITARY],
@@ -39,17 +39,17 @@ export const captureBarrierEvents: BarrierEvent[] = [
             start: (ctx: BarrierContext, track: Track) => {
                 const [init, victim]: Faction[] = track.actors;
                 const territory = track.territory;
-                return `${init.name} начала операцию по захвату города у (${victim.name}) в секторе ${territory.title}`
+                return `${init.name} начала операцию по захвату региона (${victim.name}) в секторе ${territory.title}`
             },
             resolve: (ctx: BarrierContext, track: Track) => {
                 const [init, victim]: Faction[] = track.actors;
                 const territory = track.territory;
-                return `Силы ${init.name} установили полный контроль над городом (${victim.name}) в секторе ${territory.title}`
+                return `Силы ${init.name} установили полный контроль над регионом (${victim.name}) в секторе ${territory.title}`
             },
             reject: (ctx: BarrierContext, track: Track) => {
                 const [init, victim]: Faction[] = track.actors;
                 const territory = track.territory;
-                return `Войска (${victim.name}) отстояли город от наступления ${init.name} в секторе ${territory.title}`
+                return `Войска (${victim.name}) отстояли регион от наступления ${init.name} в секторе ${territory.title}`
             },
         }
     },
@@ -58,7 +58,7 @@ export const captureBarrierEvents: BarrierEvent[] = [
         id: 'capture_industrial_complex',
         title: 'захват промышленного комплекса',
         type: EventType.EVENT,
-        actionType: ActionType.CAPTURE,
+        actionType: ActionType.WAR,
         actorRule: [ActorRuleType.MILITARY, ActorRuleType.CIVILIAN],
         territoryRule: TerritoryRuleType.VICTIM,
         notify: {
@@ -82,21 +82,21 @@ export const captureBarrierEvents: BarrierEvent[] = [
 
     {
         id: 'capture_port',
-        title: 'захват морского порта',
+        title: 'захват речного порта',
         type: EventType.EVENT,
-        actionType: ActionType.CAPTURE,
+        actionType: ActionType.WAR,
         actorRule: [ActorRuleType.MILITARY, ActorRuleType.MILITARY],
         territoryRule: TerritoryRuleType.VICTIM,
         notify: {
             start: (ctx: BarrierContext, track: Track) => {
                 const [init, victim]: Faction[] = track.actors;
                 const territory = track.territory;
-                return `${init.name} начала штурм морского порта (${victim.name}) в секторе ${territory.title}`
+                return `${init.name} начала штурм порта (${victim.name}) в секторе ${territory.title}`
             },
             resolve: (ctx: BarrierContext, track: Track) => {
                 const [init, victim]: Faction[] = track.actors;
                 const territory = track.territory;
-                return `Морской порт (${victim.name}) перешел под контроль ${init.name} в секторе ${territory.title}`
+                return `Речной порт (${victim.name}) перешел под контроль ${init.name} в секторе ${territory.title}`
             },
             reject: (ctx: BarrierContext, track: Track) => {
                 const [init, victim]: Faction[] = track.actors;
@@ -110,7 +110,7 @@ export const captureBarrierEvents: BarrierEvent[] = [
         id: 'capture_airport',
         title: 'захват аэропорта',
         type: EventType.EVENT,
-        actionType: ActionType.CAPTURE,
+        actionType: ActionType.WAR,
         actorRule: [ActorRuleType.MILITARY, ActorRuleType.MILITARY],
         territoryRule: TerritoryRuleType.VICTIM,
         notify: {
@@ -136,7 +136,7 @@ export const captureBarrierEvents: BarrierEvent[] = [
         id: 'capture_power_plant',
         title: 'захват электростанции',
         type: EventType.EVENT,
-        actionType: ActionType.CAPTURE,
+        actionType: ActionType.WAR,
         actorRule: [ActorRuleType.MILITARY, ActorRuleType.CIVILIAN],
         territoryRule: TerritoryRuleType.VICTIM,
         notify: {
@@ -162,7 +162,7 @@ export const captureBarrierEvents: BarrierEvent[] = [
         id: 'capture_command_center',
         title: 'захват командного центра',
         type: EventType.EVENT,
-        actionType: ActionType.CAPTURE,
+        actionType: ActionType.WAR,
         actorRule: [ActorRuleType.MILITARY, ActorRuleType.MILITARY],
         territoryRule: TerritoryRuleType.VICTIM,
         notify: {
@@ -188,7 +188,7 @@ export const captureBarrierEvents: BarrierEvent[] = [
         id: 'capture_research_facility',
         title: 'захват научного центра',
         type: EventType.EVENT,
-        actionType: ActionType.CAPTURE,
+        actionType: ActionType.WAR,
         actorRule: [ActorRuleType.MILITARY, ActorRuleType.CIVILIAN],
         territoryRule: TerritoryRuleType.VICTIM,
         notify: {
@@ -214,7 +214,7 @@ export const captureBarrierEvents: BarrierEvent[] = [
         id: 'capture_communications_hub',
         title: 'захват центра связи',
         type: EventType.EVENT,
-        actionType: ActionType.CAPTURE,
+        actionType: ActionType.WAR,
         actorRule: [ActorRuleType.MILITARY, ActorRuleType.MILITARY],
         territoryRule: TerritoryRuleType.VICTIM,
         notify: {
@@ -240,7 +240,7 @@ export const captureBarrierEvents: BarrierEvent[] = [
         id: 'capture_supply_depot',
         title: 'захват склада снабжения',
         type: EventType.EVENT,
-        actionType: ActionType.CAPTURE,
+        actionType: ActionType.WAR,
         actorRule: [ActorRuleType.MILITARY, ActorRuleType.MILITARY],
         territoryRule: TerritoryRuleType.VICTIM,
         notify: {
@@ -261,4 +261,4 @@ export const captureBarrierEvents: BarrierEvent[] = [
             },
         }
     }
-];
+]; 
