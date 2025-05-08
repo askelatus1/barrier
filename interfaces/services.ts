@@ -2,7 +2,7 @@ import {Region} from "./region";
 import {Faction} from "./faction";
 import {FactionId} from "./faction";
 import {ActorZone} from "./index";
-import {ActorType, RegionStatus} from "../dict/constants";
+import {ActorType, RegionStatus, ActorRuleType} from "../dict/constants";
 
 /**
  * Interface for managing regions in the system
@@ -140,6 +140,14 @@ export interface IActorEngine {
      * @returns Array of factions that have their base in the specified region
      */
     getActorsByBaseRegion(regionId: string): Faction[];
+
+    /**
+     * Фильтрует массив акторов по правилу
+     * @param actors Массив акторов для фильтрации
+     * @param rule Правило фильтрации
+     * @returns Отфильтрованный массив акторов
+     */
+    filterActorsByRule(actors: Faction[], rule: ActorRuleType): Faction[];
 }
 
 export interface IActorZoneService {
@@ -262,4 +270,10 @@ export interface IActorZoneService {
      * @returns Массив пустых соседних регионов
      */
     getEmptyNeighbourRegions(zone: ActorZone): Region[];
+
+    /**
+     * Обновляет состояние зоны актора
+     * @param zone Зона актора для обновления
+     */
+    refreshZone(zone: ActorZone): void;
 } 

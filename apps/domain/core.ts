@@ -1,5 +1,4 @@
 import {ActionType, BarrierContext} from "../../interfaces";
-import {clearTimeout} from "node:timers";
 import {BarrierRandom} from "./random";
 import {ActorType} from "../../dict/constants";
 
