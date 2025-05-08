@@ -208,7 +208,7 @@ export const barrierEvent: BarrierEvent[] = [
         title: 'проводят гумунитарную помощь',
         type: EventType.EVENT,
         actionType: ActionType.PEACE,
-        actorRule: [ActorRuleType.MILITARY, ActorRuleType.CIVILIAN],
+        actorRule: [ActorRuleType.ALL, ActorRuleType.CIVILIAN],
         territoryRule: TerritoryRuleType.BOTH,
         notify: {
             start: (ctx: BarrierContext,  track: Track) => {

@@ -22,9 +22,9 @@ new GameCore(ctx, 1000);
 new EventEngine(ctx);
 new BarrierTracker(ctx);
 new Notifier(ctx);
-new ActorEngine(ctx);
 new RegionService(ctx);
+new ActorEngine(ctx);
 new ActorZoneService(ctx);
 
-// ctx.core.start();
-ctx.eventEngine.createEventById('humanitarian', faction.find(f => f.id === 'center_civ'));
+ctx.core.start();
+// ctx.eventEngine.createEventById('humanitarian', faction.find(f => f.id === 'center_civ'));

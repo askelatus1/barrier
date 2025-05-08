@@ -21,7 +21,7 @@ export class GameCore {
     tick(){
         // logic
         console.log('Game core ticked', performance.now());
-        if(!this.ttl) this.addEvent();
+        if(this.ttl <= 0) this.addEvent();
         this.scheduler = setTimeout(() => this.tick(), this.timeout);
         this.ttl--;
     }

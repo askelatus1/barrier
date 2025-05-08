@@ -150,6 +150,10 @@ export class BarrierTracker {
 
                         territory = BarrierRandom.selectRandom(availableRegions);
                     }
+                    secondActor = territory.faction ?? territory ? 
+                        BarrierRandom.selectRandom(this.ctx.actorEngine.getActorsByBaseRegion(territory.id)) : 
+                        undefined;
+                        
                     break;
 
                 case ActionType.TRADE:
@@ -165,29 +169,13 @@ export class BarrierTracker {
                         }
 
                         // Получаем соседей, соответствующих правилу
-                        const neighbourActors = this.ctx.actorEngine.getActorsAll()
-                            .filter(actor => {
-                                switch(secondRule) {
-                                    case ActorRuleType.MILITARY:
-                                        return actor.type === ActorType.MILITARY;
-                                    case ActorRuleType.CIVILIAN:
-                                        return actor.type === ActorType.CIVILIAN;
-                                    case ActorRuleType.TERRORIST:
-                                        return actor.type === ActorType.TERRORIST;
-                                    case ActorRuleType.ARMORED:
-                                        return actor.type === ActorType.MILITARY || actor.type === ActorType.TERRORIST;
-                                    case ActorRuleType.ALL:
-                                        return true;
-                                    case ActorRuleType.NONE:
-                                        return false;
-                                }
-                            });
+                        const neighbourActors = this.ctx.actorEngine.getActorsByRule(secondRule);
 
                         if(neighbourActors.length === 0) {
                             throw new Error(`No available neighbour actors for rule ${secondRule} for event ${event.id} firstActor: ${firstActor.id}`);
                         }
 
-                        secondActor = neighbourActors[BarrierRandom.getRandomInt(neighbourActors.length)];
+                        secondActor = BarrierRandom.selectRandom(neighbourActors);
                         
                         // Определяем территорию для военных через фронтовые регионы
                         const frontRegions = this.ctx.actorZoneService.getFrontRegions(zone);
@@ -207,22 +195,7 @@ export class BarrierTracker {
 
                         // Получаем соседей, соответствующих правилу
                         const neighbourActors = this.ctx.actorEngine.getActorsByBaseRegion(baseRegion.id)
-                            .filter(actor => {
-                                switch(secondRule) {
-                                    case ActorRuleType.MILITARY:
-                                        return actor.type === ActorType.MILITARY;
-                                    case ActorRuleType.CIVILIAN:
-                                        return actor.type === ActorType.CIVILIAN;
-                                    case ActorRuleType.TERRORIST:
-                                        return actor.type === ActorType.TERRORIST;
-                                    case ActorRuleType.ARMORED:
-                                        return actor.type === ActorType.MILITARY || actor.type === ActorType.TERRORIST;
-                                    case ActorRuleType.ALL:
-                                        return true;
-                                    case ActorRuleType.NONE:
-                                        return false;
-                                }
-                            });
+                            .filter(actor => this.ctx.actorEngine.getActorsByRule(secondRule).includes(actor));
 
                         if (neighbourActors.length === 0) {
                             throw new Error(`No available neighbour actors for rule ${secondRule} for event ${event.id} firstActor: ${firstActor.id}`);

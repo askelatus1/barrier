@@ -1,7 +1,7 @@
 import {BarrierContext, BarrierEvent, Track, Faction} from "../../interfaces";
-import {barrierEvent} from "../../dict/barrierEvent";
+import {allBarrierEvents} from "../../dict/allBarrierEvents";
 import {BarrierRandom} from "./random";
-import {ActorType, ActorRuleType} from "../../dict/constants";
+import {ActorType} from "../../dict/constants";
 
 export class EventEngine {
     constructor(private ctx: BarrierContext) {
@@ -17,7 +17,7 @@ export class EventEngine {
     }
 
     getEventById(id: string): BarrierEvent | undefined {
-        return barrierEvent.find(event => event.id === id);
+        return allBarrierEvents.find(event => event.id === id);
     }
 
     getEventByTrack(track: Track): BarrierEvent {
@@ -29,7 +29,7 @@ export class EventEngine {
      * @returns Массив всех событий
      */
     getAllEvents(): BarrierEvent[] {
-        return [...barrierEvent];
+        return [...allBarrierEvents];
     }
 
     /**
@@ -38,24 +38,10 @@ export class EventEngine {
      * @returns Массив событий для указанного типа актора
      */
     getEventsByActorType(type: ActorType): BarrierEvent[] {
-        return barrierEvent.filter(event => {
-            const targetActorRule = event.actorRule[0] ?? ActorRuleType.NONE;
-            switch(targetActorRule) {
-                case ActorRuleType.MILITARY:
-                    return type === ActorType.MILITARY;
-                case ActorRuleType.CIVILIAN:
-                    return type === ActorType.CIVILIAN;
-                case ActorRuleType.TERRORIST:
-                    return type === ActorType.TERRORIST;
-                case ActorRuleType.ARMORED:
-                    return type === ActorType.MILITARY || type === ActorType.TERRORIST;
-                case ActorRuleType.ALL:
-                    return true;
-                case ActorRuleType.NONE:
-                    return false;
-                default:
-                    return false;
-            }
+        return allBarrierEvents.filter(event => {
+            const [initiatorRule] = event.actorRule;
+            const validActors = this.ctx.actorEngine.getActorsByRule(initiatorRule);
+            return validActors.some(actor => actor.type === type);
         });
     }
 
@@ -75,6 +61,6 @@ export class EventEngine {
      * @returns true если событие существует, false если нет
      */
     hasEvent(id: string): boolean {
-        return barrierEvent.some(event => event.id === id);
+        return allBarrierEvents.some(event => event.id === id);
     }
 }

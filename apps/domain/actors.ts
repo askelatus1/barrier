@@ -1,9 +1,9 @@
 import {BarrierContext, Faction, MilitaryFaction, Region} from "../../interfaces";
 import {faction} from "../../dict/factions";
 import {getMilitary, getCivilian, getTerrors} from "./rules/actorRules";
-import {getRegionByFaction, getRegionById} from "./rules/territoryRule";
+import {getRegionByFaction} from "./rules/territoryRule";
 import {IActorEngine} from "../../interfaces/services";
-import { ActorType } from "../../dict/constants";
+import { ActorRuleType, ActorType } from "../../dict/constants";
 
 export class ActorEngine implements IActorEngine {
     private actorPool: Map<string, Faction> = new Map();
@@ -16,9 +16,9 @@ export class ActorEngine implements IActorEngine {
     private initializeActors(): void {
         faction.forEach(actor => {
             if (actor.type === ActorType.MILITARY) {
-                const region = getRegionById(actor.baseRegion);
+                const region = this.ctx.regionService.getRegionById(actor.baseRegion);
                 if (region) {
-                    region.faction = actor as MilitaryFaction;
+                    this.ctx.regionService.setFactionToRegion(region.id, actor as MilitaryFaction);
                 }
             }
             this.actorPool.set(actor.id, actor);
@@ -48,6 +48,25 @@ export class ActorEngine implements IActorEngine {
 
     getActorsAll(): Faction[] {
         return [...this.actorPool.values()];
+    }
+
+    getActorsByRule(rule: ActorRuleType): Faction[] {
+        switch(rule) {
+            case ActorRuleType.MILITARY:
+                return this.getMilitaryActors();
+            case ActorRuleType.CIVILIAN:
+                return this.getCivilianActors();
+            case ActorRuleType.TERRORIST:
+                return this.getTerroristActors();
+            case ActorRuleType.ARMORED:
+                return [...this.getMilitaryActors(), ...this.getTerroristActors()];
+            case ActorRuleType.ALL:
+                return this.getActorsAll();
+            case ActorRuleType.NONE:
+                return [];
+            default:
+                return [];
+        }
     }
 
     getNeighbourTerritoriesByActor(actor: Faction): Region[] {
