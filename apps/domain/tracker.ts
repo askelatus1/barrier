@@ -46,7 +46,7 @@ export class BarrierTracker {
         let secondActor: Faction | undefined;
         let territory: Region | undefined;
         const actorZone = this.ctx.actorZoneService.getZoneByFactionId(firstActor.id);
-        if (!actorZone) {
+        if (!actorZone && firstActor.type === ActorType.MILITARY) {
             throw new Error(`Actor zone not found for faction ${firstActor.id}`);
         }
         

@@ -54,17 +54,17 @@ new Notifier(ctx,
         // 'telegram'
     ]);
 
-const actor = ctx.actorEngine.getActorById('sin') as MilitaryFaction;
-const region = ctx.regionService.getRegionById('center');
-region.faction = actor;
-const zone = ctx.actorZoneService.getZoneByFactionId(actor.id);
-ctx.actorZoneService.refreshZone(zone);
+// const actor = ctx.actorEngine.getActorById('sin') as MilitaryFaction;
+// const region = ctx.regionService.getRegionById('center');
+// region.faction = actor;
+// const zone = ctx.actorZoneService.getZoneByFactionId(actor.id);
+// ctx.actorZoneService.refreshZone(zone);
 // console.log(`regions by faction: ${zone.regions.map(r => r.id)}`);
 // zone.regions[0].status = RegionStatus.WRECKAGE;
 
-ctx.eventEngine.createEventById('air_superiority', actor);
+// ctx.eventEngine.createEventById('air_superiority', actor);
 
-// ctx.core.start();
+ctx.core.start();
 
 // Добавляем обработчики для корректного завершения всех процессов
 const cleanup = () => {
