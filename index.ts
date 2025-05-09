@@ -36,15 +36,14 @@ new ActorZoneService(ctx);
 
 // Инициализируем телеграм-бота, если задан токен в переменных окружения
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const TELEGRAM_NOTIFICATION_CHAT_ID = process.env.TELEGRAM_NOTIFICATION_CHAT_ID;
 if (TELEGRAM_BOT_TOKEN) {
     const telegramBot = new TelegramBot(ctx, TELEGRAM_BOT_TOKEN);
     ctx.telegramBot = telegramBot;
     telegramBot.start();
     
-    // Если задан TELEGRAM_NOTIFICATION_CHAT_ID, устанавливаем его как получателя уведомлений
-    const notificationChatId = process.env.TELEGRAM_NOTIFICATION_CHAT_ID;
-    if (notificationChatId) {
-        telegramBot.setNotificationChatId(Number(notificationChatId));
+    if (TELEGRAM_NOTIFICATION_CHAT_ID) {
+        telegramBot.setNotificationChatId(Number(TELEGRAM_NOTIFICATION_CHAT_ID));
     }
 }
 // Создаем Notifier с указанием режимов 'console' и 'telegram'

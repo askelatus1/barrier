@@ -8,7 +8,7 @@ export class Notifier {
         ctx.notifier = this;
         this.modes = modes;
         if(this.modes.includes('telegram')){
-            this.ctx.
+            this.telegramMessageBus$.subscribe((msg) => this.ctx.telegramBot.sendMessage(msg));
         }
     }
 
@@ -41,6 +41,7 @@ export class Notifier {
                     console.log('Noty: ', text);
                     break;
                 case 'telegram':
+                    this.telegramMessageBus$.next(text);
                     break;
                 default:
                     break;

@@ -90,8 +90,8 @@ export class TelegramBot {
   }
 
   // Метод для отправки сообщения конкретному пользователю
-  public sendMessage(chatId: number, message: string) {
-    this.bot.telegram.sendMessage(chatId, message)
+  public sendMessage(message: string) {
+    this.bot.telegram.sendMessage(this.notificationChatId, message)
       .catch(error => console.error('Ошибка при отправке сообщения:', error));
   }
 

@@ -1,5 +1,1 @@
-import { TelegramBot } from './telegram';
-
-export {
-    TelegramBot
-};
+export * from './telegram';
