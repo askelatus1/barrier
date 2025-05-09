@@ -142,6 +142,13 @@ export interface IActorEngine {
     getActorsByBaseRegion(regionId: string): Faction[];
 
     /**
+     * Получает всех акторов, связанных с регионом
+     * @param region - Регион для поиска акторов
+     * @returns Массив всех акторов, связанных с регионом
+     */
+    getActorsByRegion(region: Region): Faction[];
+
+    /**
      * Фильтрует массив акторов по правилу
      * @param actors Массив акторов для фильтрации
      * @param rule Правило фильтрации

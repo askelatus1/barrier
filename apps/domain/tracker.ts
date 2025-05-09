@@ -3,6 +3,7 @@ import {getTerritoryByRule} from "./rules/territoryRule";
 import {BarrierRandom} from "./random";
 import {TIMEOUTS, ActorType, NotifyType, RegionStatus, ActorRuleType, TerritoryRuleType} from "../../dict/constants";
 import {ActionType} from "../../interfaces/event";
+import {getRegionByFaction} from "./rules/territoryRule";
 
 /**
  * Трекер событий игры. Отслеживает и управляет жизненным циклом событий.
@@ -138,24 +139,32 @@ export class BarrierTracker {
                         return;
                     }
 
-                    // Выбираем территорию
-                    territory = BarrierRandom.selectRandom(availableRegions);
+                    // Если нет второго правила, просто выбираем случайный регион
+                    if (!event.actorRule[1]) {
+                        territory = BarrierRandom.selectRandom(availableRegions);
+                        break;
+                    }
 
-                    // Если есть второе правило, ищем подходящего актора в выбранной территории
-                    if (event.actorRule[1]) {
-                        const territoryActors = [
-                            ...(territory.faction ? [territory.faction] : []),
-                            ...this.ctx.actorEngine.getActorsByBaseRegion(territory.id)
-                        ].filter(actor => actor.id !== firstActor.id);
+                    // Для каждого региона получаем подходящих акторов
+                    const availableActors = new Set<Faction>();
+                    availableRegions.forEach(region => {
+                        const actors = this.ctx.actorEngine.filterActorsByRule(this.ctx.actorEngine.getActorsByRegion(region), event.actorRule[1]);
+                        actors.forEach(actor => availableActors.add(actor));
+                    });
+                
 
-                        const suitableActors = this.ctx.actorEngine.filterActorsByRule(territoryActors, event.actorRule[1]);
-                        
-                        if (suitableActors.length === 0) {
-                            console.warn(`No suitable actors found in selected territory for rule ${event.actorRule[1]}, skipping turn`);
-                            return;
-                        }
+                    if (availableActors.size === 0) {
+                        console.warn(`No regions with suitable actors found for rule ${event.actorRule[1]}, skipping turn`);
+                        return;
+                    }
 
-                        secondActor = BarrierRandom.selectRandom(suitableActors);
+                    // Выбираем случайного актора из доступных
+                    secondActor = BarrierRandom.selectRandom([...availableActors]);
+                    territory = BarrierRandom.selectRandom(this.ctx.regionService.getRegionsByFaction(secondActor.id));
+                    
+                    if (!territory) {
+                        console.warn(`No territory found for selected actor ${secondActor?.id}, skipping turn`);
+                        return;
                     }
                     
                     break;
@@ -170,31 +179,34 @@ export class BarrierTracker {
                         return;
                     }
 
-                    // Получаем всех акторов, соответствующих правилу, кроме инициатора
-                    const availableActors = this.ctx.actorEngine.getActorsByRule(secondRule)
+                    // Получаем всех возможных акторов из всех регионов
+                    const allRegions = this.ctx.regionService.getRegionsAll();
+                    const allActors = allRegions.flatMap(region => this.ctx.actorEngine.getActorsByRegion(region));
+
+                    // Фильтруем дубликаты и исключаем инициатора
+                    const uniqueActors: Faction[] = [...new Map(allActors.map(actor => [actor.id, actor])).values()]
                         .filter(actor => actor.id !== firstActor.id);
 
-                    if(availableActors.length === 0) {
-                        console.warn(`No available actors for rule ${secondRule} for event ${event.id} firstActor: ${firstActor.id}, skipping turn`);
+                    // Применяем правило для выбора подходящего актора
+                    const suitableActors = this.ctx.actorEngine.filterActorsByRule(uniqueActors, secondRule);
+                    
+                    if (suitableActors.length === 0) {
+                        console.warn(`No suitable actors found for rule ${secondRule}, skipping turn`);
                         return;
                     }
 
-                    secondActor = BarrierRandom.selectRandom(availableActors);
+                    // Выбираем случайного подходящего актора
+                    secondActor = BarrierRandom.selectRandom(suitableActors);
                     
-                    // Определяем территорию в зависимости от типа второго актора
+                    // Определяем территорию в зависимости от типа выбранного актора
                     if (secondActor.type === ActorType.MILITARY) {
-                        // Для военных фракций берем случайный регион из их зоны
                         const secondActorZone = this.ctx.actorZoneService.getZoneByFactionId(secondActor.id);
-                        if (!secondActorZone) {
-                            throw new Error(`Zone not found for faction ${firstActor.id}`);
-                        }
-                        if (secondActorZone.regions.length === 0) {
-                            console.warn(`No regions found in zone for faction ${secondActor.id}, skipping turn`);
+                        if (!secondActorZone || secondActorZone.regions.length === 0) {
+                            console.warn(`No regions found in zone for military faction ${secondActor.id}, skipping turn`);
                             return;
                         }
                         territory = BarrierRandom.selectRandom(secondActorZone.regions);
                     } else {
-                        // Для мирных и террористов берем их базовый регион
                         territory = this.ctx.regionService.getRegionById(secondActor.baseRegion);
                         if (!territory) {
                             console.warn(`Base region not found for faction ${secondActor.id}, skipping turn`);

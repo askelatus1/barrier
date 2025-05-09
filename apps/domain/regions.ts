@@ -60,7 +60,10 @@ export class RegionService implements IRegionService {
     }
 
     getRegionsByFaction(factionId: string): Region[] {
-        return this.getRegionsAll().filter(region => region.faction?.id === factionId);
+        return this.getRegionsAll().filter(region => 
+            region.faction?.id === factionId || 
+            this.ctx.actorEngine.getActorsByBaseRegion(region.id).some(actor => actor.id === factionId)
+        );
     }
 
     getMilitaryRegions(): Region[] {

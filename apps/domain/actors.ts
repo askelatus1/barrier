@@ -119,4 +119,26 @@ export class ActorEngine implements IActorEngine {
     getActorsByBaseRegion(regionId: string): Faction[] {
         return this.getActorsAll().filter(actor => actor.baseRegion === regionId);
     }
+
+    /**
+     * Получает всех акторов, связанных с регионом:
+     * - Владелец региона (если есть)
+     * - Все регионы зоны для военных фракций
+     * - Все акторы с базой в этом регионе
+     * @param region Регион для поиска акторов
+     * @returns Массив уникальных акторов
+     */
+    getActorsByRegion(region: Region): Faction[] {
+        const actors: Faction[] = [];
+        
+        // Добавляем владельца региона, если есть
+        if (region.faction) {
+            actors.push(region.faction);
+        }
+        
+        // Добавляем всех акторов с базой в этом регионе
+        actors.push(...this.getActorsByBaseRegion(region.id));
+        
+        return actors;
+    }
 }
