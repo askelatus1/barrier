@@ -2,7 +2,7 @@ import {Region} from "./region";
 import {Faction} from "./faction";
 import {FactionId} from "./faction";
 import {ActorZone} from "./index";
-import {ActorType, RegionStatus, ActorRuleType} from "../dict/constants";
+import {ActorType, RegionStatus, ActorRuleType, TerritoryRuleType} from "../dict/constants";
 
 /**
  * Interface for managing regions in the system
@@ -276,4 +276,20 @@ export interface IActorZoneService {
      * @param zone Зона актора для обновления
      */
     refreshZone(zone: ActorZone): void;
+
+    /**
+     * Получает регионы в зоне по правилу территории
+     * @param zone Зона актора
+     * @param rule Правило территории
+     * @returns Массив регионов, соответствующих правилу
+     */
+    getRegionsByTerritoryRule(zone: ActorZone, rule: TerritoryRuleType): Region[];
+
+    /**
+     * Получает соседние регионы зоны по правилу территории
+     * @param zone Зона актора
+     * @param rule Правило территории
+     * @returns Массив соседних регионов, соответствующих правилу
+     */
+    getNeighbourRegionsByTerritoryRule(zone: ActorZone, rule: TerritoryRuleType): Region[];
 } 

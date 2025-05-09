@@ -1,7 +1,7 @@
 import {BarrierContext, BarrierEvent, Track, Faction, Region, MilitaryFaction} from "../../interfaces";
 import {getTerritoryByRule} from "./rules/territoryRule";
 import {BarrierRandom} from "./random";
-import {TIMEOUTS, ActorType, NotifyType, RegionStatus, ActorRuleType} from "../../dict/constants";
+import {TIMEOUTS, ActorType, NotifyType, RegionStatus, ActorRuleType, TerritoryRuleType} from "../../dict/constants";
 import {ActionType} from "../../interfaces/event";
 
 /**
@@ -91,17 +91,17 @@ export class BarrierTracker {
                     break;
                 
                 case ActionType.WRECKAGE:
-                    // Для WRECKAGE ищем регионы со статусом WRECKAGE среди соседей или в зоне инициатора
+                    // Для WRECKAGE ищем регионы с типом WRECKAGE среди соседей или в зоне инициатора
                     const wreckageZone = this.ctx.actorZoneService.getZoneByFactionId(firstActor.id);
                     if (!wreckageZone) {
                         throw new Error(`Actor zone not found for faction ${firstActor.id}`);
                     }
 
-                    // Получаем все регионы в зоне актора со статусом WRECKAGE
-                    const zoneWreckageRegions = this.ctx.actorZoneService.getRegionsByStatus(wreckageZone, RegionStatus.WRECKAGE);
+                    // Получаем все регионы в зоне актора с типом WRECKAGE
+                    const zoneWreckageRegions = this.ctx.actorZoneService.getRegionsByTerritoryRule(wreckageZone, TerritoryRuleType.WRECKAGE);
                     
-                    // Получаем соседние регионы со статусом WRECKAGE
-                    const neighbourWreckageRegions = this.ctx.actorZoneService.getNeighbourRegionsByStatus(wreckageZone, RegionStatus.WRECKAGE);
+                    // Получаем соседние регионы с типом WRECKAGE
+                    const neighbourWreckageRegions = this.ctx.actorZoneService.getNeighbourRegionsByTerritoryRule(wreckageZone, TerritoryRuleType.WRECKAGE);
                     
                     // Объединяем регионы и выбираем случайный
                     const availableWreckageRegions = [...zoneWreckageRegions, ...neighbourWreckageRegions];
@@ -115,49 +115,49 @@ export class BarrierTracker {
                     break;
 
                 case ActionType.PEACE:
+                    let availableRegions: Region[] = [];
+
                     if (firstActor.type === ActorType.MILITARY) {
                         // Для военных фракций
                         const zone = this.ctx.actorZoneService.getZoneByFactionId(firstActor.id);
                         if (!zone) {
                             throw new Error(`Zone not found for military faction ${firstActor.id}`);
                         }
-
-                        // Получаем соседние регионы
-                        const neighbourRegions = this.ctx.actorZoneService.getNeighbourRegions(zone);
-
-                        const availableRegions = [...neighbourRegions];
-                        if (availableRegions.length === 0) {
-                            console.warn(`No empty neighbour regions available for faction ${firstActor.id}, skipping turn`);
-                            return;
-                        }
-
-                        territory = BarrierRandom.selectRandom(availableRegions);
-
+                        availableRegions = this.ctx.actorZoneService.getNeighbourRegions(zone);
                     } else {
                         // Для не военных фракций
-                        // Получаем базовый регион актора
                         const baseRegion = this.ctx.regionService.getRegionById(firstActor.baseRegion);
                         if (!baseRegion) {
                             throw new Error(`Base region not found for faction ${firstActor.id}`);
                         }
+                        availableRegions = this.ctx.regionService.getNeighbourRegions(baseRegion.id);
+                    }
 
-                        // Получаем соседние свободные регионы
-                        const neighbourRegions = this.ctx.regionService.getNeighbourRegions(baseRegion.id);
+                    if (availableRegions.length === 0) {
+                        console.warn(`No available regions for faction ${firstActor.id}, skipping turn`);
+                        return;
+                    }
 
-                        const availableRegions = [...neighbourRegions];
-                        if (availableRegions.length === 0) {
-                            console.warn(`No empty neighbour regions available for faction ${firstActor.id}, skipping turn`);    
+                    // Выбираем территорию
+                    territory = BarrierRandom.selectRandom(availableRegions);
+
+                    // Если есть второе правило, ищем подходящего актора в выбранной территории
+                    if (event.actorRule[1]) {
+                        const territoryActors = [
+                            ...(territory.faction ? [territory.faction] : []),
+                            ...this.ctx.actorEngine.getActorsByBaseRegion(territory.id)
+                        ].filter(actor => actor.id !== firstActor.id);
+
+                        const suitableActors = this.ctx.actorEngine.filterActorsByRule(territoryActors, event.actorRule[1]);
+                        
+                        if (suitableActors.length === 0) {
+                            console.warn(`No suitable actors found in selected territory for rule ${event.actorRule[1]}, skipping turn`);
                             return;
                         }
 
-                        territory = BarrierRandom.selectRandom(availableRegions);
+                        secondActor = BarrierRandom.selectRandom(suitableActors);
                     }
-
-                    const availableActors = this.ctx.actorEngine.getActorsByBaseRegion(territory.id);
-                    secondActor = territory ? 
-                        BarrierRandom.selectRandom(this.ctx.actorEngine.filterActorsByRule(availableActors, event.actorRule[1])) : 
-                        undefined;
-                        
+                    
                     break;
 
                 case ActionType.TRADE:
@@ -165,9 +165,9 @@ export class BarrierTracker {
                 case ActionType.ESPIONAGE: {
                     // Для остальных событий используем стандартную логику территориальных правил
                     const secondRule = event.actorRule[1];
-                    const zone = this.ctx.actorZoneService.getZoneByFactionId(firstActor.id);
-                    if(!zone) {
-                        throw new Error(`Zone not found for faction ${firstActor.id}`);
+                    if (!secondRule) {
+                        console.warn(`No second actor rule for event ${event.id}, skipping turn`);
+                        return;
                     }
 
                     // Получаем всех акторов, соответствующих правилу, кроме инициатора
@@ -206,6 +206,10 @@ export class BarrierTracker {
             }
             
             const actors = [firstActor, secondActor].filter(Boolean);
+            if((event.actorRule?.length ?? 0) !== actors.length ) {
+                console.warn(`Invalid number of actors for event ${event.id}, expected ${event.actorRule?.length ?? 0}, got ${actors.length}`);
+                return;
+            }
            
             const track: Track = {
                 id: crypto.randomUUID(),

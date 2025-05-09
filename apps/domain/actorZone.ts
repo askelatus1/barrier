@@ -1,7 +1,7 @@
 import {BarrierContext, Region, Faction, FactionId} from "../../interfaces";
 import {ActorZone} from "../../interfaces/actorZone";
 import {IActorZoneService} from "../../interfaces/services";
-import {ActorType, RegionStatus} from "../../dict/constants";
+import {ActorType, RegionStatus, TerritoryRuleType} from "../../dict/constants";
 
 export class ActorZoneService implements IActorZoneService {
     private zones: Map<FactionId, ActorZone> = new Map();
@@ -152,5 +152,53 @@ export class ActorZoneService implements IActorZoneService {
 
     refreshZone(zone: ActorZone): void {
         this.updateZone(zone);
+    }
+
+    /**
+     * Получает регионы в зоне по правилу территории
+     * @param zone Зона актора
+     * @param rule Правило территории
+     * @returns Массив регионов, соответствующих правилу
+     */
+    getRegionsByTerritoryRule(zone: ActorZone, rule: TerritoryRuleType): Region[] {
+        switch(rule) {
+            case TerritoryRuleType.EMPTY:
+                return zone.regions.filter(region => !region.faction);
+            case TerritoryRuleType.WRECKAGE:
+                return zone.regions.filter(region => region.status === RegionStatus.WRECKAGE);
+            case TerritoryRuleType.INITIATOR:
+                return zone.regions.filter(region => region.faction?.id === zone.faction.id);
+            case TerritoryRuleType.VICTIM:
+                return zone.regions.filter(region => region.faction?.id !== zone.faction.id && region.faction);
+            case TerritoryRuleType.BOTH:
+                return zone.regions;
+            default:
+                return [];
+        }
+    }
+
+    /**
+     * Получает соседние регионы зоны по правилу территории
+     * @param zone Зона актора
+     * @param rule Правило территории
+     * @returns Массив соседних регионов, соответствующих правилу
+     */
+    getNeighbourRegionsByTerritoryRule(zone: ActorZone, rule: TerritoryRuleType): Region[] {
+        const neighbourRegions = this.getNeighbourRegions(zone);
+        
+        switch(rule) {
+            case TerritoryRuleType.EMPTY:
+                return neighbourRegions.filter(region => !region.faction);
+            case TerritoryRuleType.WRECKAGE:
+                return neighbourRegions.filter(region => region.status === RegionStatus.WRECKAGE);
+            case TerritoryRuleType.INITIATOR:
+                return neighbourRegions.filter(region => region.faction?.id === zone.faction.id);
+            case TerritoryRuleType.VICTIM:
+                return neighbourRegions.filter(region => region.faction?.id !== zone.faction.id && region.faction);
+            case TerritoryRuleType.BOTH:
+                return neighbourRegions;
+            default:
+                return [];
+        }
     }
 } 
