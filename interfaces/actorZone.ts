@@ -3,27 +3,27 @@ import {Region} from "./region";
 
 export interface ActorZone {
     /**
-     * Фракция, которой принадлежит зона
+     * The faction that owns the zone
      */
     faction: Faction;
 
     /**
-     * Все регионы, принадлежащие фракции
+     * All regions belonging to the faction
      */
     regions: Region[];
 
     /**
-     * Тыловые регионы зоны
+     * Rear regions of the zone
      */
     rearRegions: Region[];
 
     /**
-     * Фронтовые регионы зоны
+     * Front regions of the zone
      */
     frontRegions: Region[];
 
     /**
-     * Открытые регионы зоны
+     * Open regions of the zone
      */
     openRegions: Region[];
 }

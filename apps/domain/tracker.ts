@@ -1,9 +1,7 @@
 import {BarrierContext, BarrierEvent, Track, Faction, Region, MilitaryFaction} from "../../interfaces";
-import {getTerritoryByRule} from "./rules/territoryRule";
 import {BarrierRandom} from "./random";
-import {TIMEOUTS, ActorType, NotifyType, RegionStatus, ActorRuleType, TerritoryRuleType} from "../../dict/constants";
+import {TIMEOUTS, ActorType, NotifyType, RegionStatus, TerritoryRuleType} from "../../dict/constants";
 import {ActionType} from "../../interfaces/event";
-import {getRegionByFaction} from "./rules/territoryRule";
 
 /**
  * Трекер событий игры. Отслеживает и управляет жизненным циклом событий.

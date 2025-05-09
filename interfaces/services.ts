@@ -142,19 +142,26 @@ export interface IActorEngine {
     getActorsByBaseRegion(regionId: string): Faction[];
 
     /**
-     * Получает всех акторов, связанных с регионом
-     * @param region - Регион для поиска акторов
-     * @returns Массив всех акторов, связанных с регионом
+     * Retrieves all actors associated with the region
+     * @param region - The region to search actors for
+     * @returns Array of all actors associated with the region
      */
     getActorsByRegion(region: Region): Faction[];
 
     /**
-     * Фильтрует массив акторов по правилу
-     * @param actors Массив акторов для фильтрации
-     * @param rule Правило фильтрации
-     * @returns Отфильтрованный массив акторов
+     * Filters an array of actors by rule
+     * @param actors Array of actors to filter
+     * @param rule Filtering rule
+     * @returns Filtered array of actors
      */
     filterActorsByRule(actors: Faction[], rule: ActorRuleType): Faction[];
+
+    /**
+     * Gets actors by specified rule
+     * @param rule The rule to filter actors by
+     * @returns Array of actors matching the rule
+     */
+    getActorsByRule(rule: ActorRuleType): Faction[];
 }
 
 export interface IActorZoneService {

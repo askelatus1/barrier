@@ -4,8 +4,6 @@ import {Notifier} from "./apps/domain/notifier";
 import {ActorEngine} from "./apps/domain/actors";
 import {ActorZoneService} from "./apps/domain/actorZone";
 import { RegionService } from "./apps/domain/regions";
-import { faction } from "./dict/factions";
-import { RegionStatus } from "./dict/constants";
 import { TelegramBot } from "./apps/bot";
 import * as dotenv from 'dotenv';
 
@@ -45,24 +43,25 @@ if (TELEGRAM_BOT_TOKEN) {
         telegramBot.setNotificationChatId(Number(TELEGRAM_NOTIFICATION_CHAT_ID));
     }
 
-    // telegramBot.start();
+    telegramBot.start();
 }
 // Создаем Notifier с указанием режимов 'console' и 'telegram'
 new Notifier(ctx, 
     [
         'console', 
-        // 'telegram'
+        'telegram'
     ]);
 
-// const actor = ctx.actorEngine.getActorById('sin') as MilitaryFaction;
+// const monolith = ctx.actorEngine.getActorById('monolith') as MilitaryFaction;
+// const sin = ctx.actorEngine.getActorById('sin') as MilitaryFaction;
 // const region = ctx.regionService.getRegionById('center');
-// region.faction = actor;
+// region.faction = sin;
 // const zone = ctx.actorZoneService.getZoneByFactionId(actor.id);
 // ctx.actorZoneService.refreshZone(zone);
 // console.log(`regions by faction: ${zone.regions.map(r => r.id)}`);
 // zone.regions[0].status = RegionStatus.WRECKAGE;
 
-// ctx.eventEngine.createEventById('air_superiority', actor);
+// ctx.eventEngine.createEventById('refugee_crisis', monolith);
 
 ctx.core.start();
 
