@@ -69,7 +69,8 @@ export class GameCore {
                     ...this.ctx.eventEngine.getEventsByActorType(actorType)
                         .filter(event => 
                             event.actionType === ActionType.DIPLOMACY ||
-                            event.actionType === ActionType.ESPIONAGE
+                            event.actionType === ActionType.ESPIONAGE ||
+                            event.actionType === ActionType.WRECKAGE
                         )
                 );
                 break;
