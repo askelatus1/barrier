@@ -60,6 +60,8 @@ export class ActorEngine implements IActorEngine {
                 return this.getTerroristActors();
             case ActorRuleType.ARMORED:
                 return [...this.getMilitaryActors(), ...this.getTerroristActors()];
+            case ActorRuleType.LEGAL:
+                return [...this.getMilitaryActors(), ...this.getCivilianActors()];
             case ActorRuleType.ALL:
                 return this.getActorsAll();
             case ActorRuleType.NONE:
@@ -86,6 +88,10 @@ export class ActorEngine implements IActorEngine {
             case ActorRuleType.ARMORED:
                 return actors.filter(actor => 
                     actor.type === ActorType.MILITARY || actor.type === ActorType.TERRORIST
+                );
+            case ActorRuleType.LEGAL:
+                return actors.filter(actor => 
+                    actor.type === ActorType.MILITARY || actor.type === ActorType.CIVILIAN
                 );
             case ActorRuleType.ALL:
                 return actors;

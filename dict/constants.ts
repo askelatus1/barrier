@@ -13,6 +13,7 @@ export enum ActorRuleType {
     CIVILIAN = 'civilian', 
     TERRORIST = 'terrorist',
     ARMORED = 'armored', // MILITARY + TERRORIST
+    LEGAL = 'legal', // MILITARY + CIVILIAN
     ALL = 'all',
     NONE = 'none'
 }
@@ -23,6 +24,7 @@ export type ActorRuleTypeMap = {
     [ActorRuleType.CIVILIAN]: ActorType.CIVILIAN;
     [ActorRuleType.TERRORIST]: ActorType.TERRORIST;
     [ActorRuleType.ARMORED]: ActorType.MILITARY | ActorType.TERRORIST;
+    [ActorRuleType.LEGAL]: ActorType.MILITARY | ActorType.CIVILIAN;
     [ActorRuleType.ALL]: ActorType;
     [ActorRuleType.NONE]: never;
 }
@@ -31,7 +33,8 @@ export enum TerritoryRuleType {
     INITIATOR = 'initiator',
     VICTIM = 'victim',
     BOTH = 'both',
-    EMPTY = 'empty'  // Для пустых регионов
+    EMPTY = 'EMPTY',
+    WRECKAGE = 'WRECKAGE'
 }
 
 export enum RegionStatus {
