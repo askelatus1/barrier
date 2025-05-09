@@ -12,17 +12,24 @@
     "start:local": "nodemon",
     "deploy": "tsc && pm2 restart ecosystem.config.js",
     "deploy:local": "tsc && pm2 restart ecosystem.config.js --env local",
-    "deploy:docker": "tsc && pm2-runtime ecosystem.config.js --env local"
+    "deploy:docker": "tsc && pm2-runtime ecosystem.config.js --env local",
+    "dotenv-vault:login": "npx dotenv-vault login",
+    "dotenv-vault:push": "npx dotenv-vault push",
+    "dotenv-vault:pull": "npx dotenv-vault pull",
+    "dotenv-vault:build": "npx dotenv-vault build"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^16.4.5",
+    "dotenv-vault": "^1.26.1",
     "express": "^5.1.0",
     "rxjs": "^7.8.2",
     "telegraf": "^4.16.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.24.0",
+    "@types/dotenv": "^8.2.3",
     "@types/eslint": "^9.6.1",
     "@types/node": "^22.14.1",
     "eslint": "^9.24.0",

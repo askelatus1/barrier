@@ -112,7 +112,6 @@ export class BarrierTracker {
                     }
                     
                     territory = availableWreckageRegions[BarrierRandom.getRandomInt(availableWreckageRegions.length)];
-                    secondActor = territory.faction ?? territory ? BarrierRandom.selectRandom(this.ctx.actorEngine.getActorsByBaseRegion(territory.id)) : undefined;
                     break;
 
                 case ActionType.PEACE:

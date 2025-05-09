@@ -5,6 +5,12 @@ import {ActorEngine} from "./apps/domain/actors";
 import {ActorZoneService} from "./apps/domain/actorZone";
 import { RegionService } from "./apps/domain/regions";
 import { faction } from "./dict/factions";
+import { RegionStatus } from "./dict/constants";
+import { TelegramBot } from "./apps/bot";
+import * as dotenv from 'dotenv';
+
+// Загружаем переменные окружения из .env файла
+dotenv.config();
 
 console.log('Engine init');
 
@@ -16,15 +22,39 @@ const ctx: BarrierContext = {
     actorEngine: undefined,
     regionService: undefined,
     actorZoneService: undefined,
+    telegramBot: undefined,
 };
 
 new GameCore(ctx, 1000);
 new EventEngine(ctx);
 new BarrierTracker(ctx);
-new Notifier(ctx);
+
+
 new RegionService(ctx);
 new ActorEngine(ctx);
 new ActorZoneService(ctx);
 
+// Инициализируем телеграм-бота, если задан токен в переменных окружения
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+if (TELEGRAM_BOT_TOKEN) {
+    const telegramBot = new TelegramBot(ctx, TELEGRAM_BOT_TOKEN);
+    ctx.telegramBot = telegramBot;
+    telegramBot.start();
+    
+    // Если задан TELEGRAM_NOTIFICATION_CHAT_ID, устанавливаем его как получателя уведомлений
+    const notificationChatId = process.env.TELEGRAM_NOTIFICATION_CHAT_ID;
+    if (notificationChatId) {
+        telegramBot.setNotificationChatId(Number(notificationChatId));
+    }
+}
+// Создаем Notifier с указанием режимов 'console' и 'telegram'
+new Notifier(ctx, ['console', 'telegram']);
+
+// const actor = ctx.actorEngine.getActorById('skyline');
+// const zone = ctx.actorZoneService.getZoneByFactionId(actor.id);
+// console.log(`regions by faction: ${zone.regions.map(r => r.id)}`);
+// zone.regions[0].status = RegionStatus.WRECKAGE;
+
+// ctx.eventEngine.createEventById('restore_residential_area', actor);
+
 ctx.core.start();
-// ctx.eventEngine.createEventById('infrastructure_development', faction.find(f => f.id === 'rudnik_civ'));

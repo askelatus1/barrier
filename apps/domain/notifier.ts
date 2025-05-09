@@ -1,12 +1,15 @@
+import { Subject } from "rxjs";
 import {BarrierContext, Track} from "../../interfaces";
-import {NotifyTemplate} from "../../interfaces/notify";
-
-export type NotifyMode = 'console' | 'telegram'
+import {NotifyTemplate, NotifyMode} from "../../interfaces/notify";
 export class Notifier {
     modes: NotifyMode[];
+    telegramMessageBus$: Subject<string> = new Subject<string>();
     constructor(private ctx: BarrierContext, modes: NotifyMode[] = ['console']) {
         ctx.notifier = this;
         this.modes = modes;
+        if(this.modes.includes('telegram')){
+            this.ctx.
+        }
     }
 
     notify(track: Track, tpl: keyof NotifyTemplate = 'start') {
@@ -29,6 +32,8 @@ export class Notifier {
                 text = event?.notify?.['reject']?.(this.ctx, track) ?? `Событие ${event?.title} провалено`;
                 break;
         }
+
+        if (!text) return;
 
         this.modes.forEach(mode => {
             switch (mode) {

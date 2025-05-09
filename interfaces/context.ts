@@ -4,6 +4,7 @@ import {EventEngine} from "../apps/domain/events";
 import {IRegionService, IActorZoneService} from "./services";
 import {INotifier} from "./notify";
 import {GameCore} from "../apps/domain/core";
+import { TelegramBot } from "../apps/bot";
 
 export interface BarrierContext {
     tracker: BarrierTracker;
@@ -13,4 +14,5 @@ export interface BarrierContext {
     eventEngine: EventEngine;
     actorZoneService: IActorZoneService;
     core: GameCore;
+    telegramBot: TelegramBot;
 } 
