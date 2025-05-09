@@ -26,8 +26,7 @@ export class TelegramBot {
         '/start - Приветствие\n' +
         '/status - Текущий статус игры\n' +
         '/factions - Список фракций\n' +
-        '/regions - Информация о регионах\n' +
-        '/setnotify - Установить этот чат для получения уведомлений'
+        '/regions - Информация о регионах'
       );
     });
 
@@ -47,12 +46,6 @@ export class TelegramBot {
     this.bot.command('regions', (ctx) => {
       const regionsInfo = this.getRegionsInfo();
       ctx.reply(regionsInfo);
-    });
-
-    // Установка текущего чата для уведомлений
-    this.bot.command('setnotify', (ctx) => {
-      this.notificationChatId = ctx.chat.id;
-      ctx.reply(`Этот чат (ID: ${ctx.chat.id}) будет получать уведомления игровой системы`);
     });
   }
 
