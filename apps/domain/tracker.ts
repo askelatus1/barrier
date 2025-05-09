@@ -45,6 +45,10 @@ export class BarrierTracker {
         let firstActor = initializer;
         let secondActor: Faction | undefined;
         let territory: Region | undefined;
+        const actorZone = this.ctx.actorZoneService.getZoneByFactionId(firstActor.id);
+        if (!actorZone) {
+            throw new Error(`Actor zone not found for faction ${firstActor.id}`);
+        }
         
         try {
             if (!firstActor) {
@@ -54,11 +58,6 @@ export class BarrierTracker {
             // Определяем территорию в зависимости от типа события
             switch (event.actionType) {
                 case ActionType.CAPTURE:
-                    const actorZone = this.ctx.actorZoneService.getZoneByFactionId(firstActor.id);
-                    if (!actorZone) {
-                        throw new Error(`Actor zone not found for faction ${firstActor.id}`);
-                    }
-
                     // Получаем пустые соседние регионы
                     const emptyNeighbourRegions = this.ctx.actorZoneService.getEmptyNeighbourRegions(actorZone);
                     if (emptyNeighbourRegions.length === 0) {
@@ -71,20 +70,21 @@ export class BarrierTracker {
                     break;
                 
                 case ActionType.WAR:
-                    // Для войны используем фронтовые регионы из зоны актора
-                    const warActorZone = this.ctx.actorZoneService.getZoneByFactionId(firstActor.id);
-                    if (!warActorZone) {
-                        throw new Error(`Actor zone not found for faction ${firstActor.id}`);
-                    }
+                    // Получаем все соседние регионы
+                    const allNeighbourRegions = this.ctx.actorZoneService.getNeighbourRegions(actorZone);
                     
-                    const frontRegions = this.ctx.actorZoneService.getFrontRegions(warActorZone);
-                    if (frontRegions.length === 0) {
+                    // Фильтруем регионы, оставляя только те, которые принадлежат другим фракциям
+                    const enemyNeighbourRegions = allNeighbourRegions.filter(region => 
+                        region.faction && region.faction.id !== firstActor.id
+                    );
+
+                    if (enemyNeighbourRegions.length === 0) {
                         console.warn(`No front regions available for faction ${firstActor.id}, skipping turn`);
                         return;
                     }
                     
                     // Выбираем случайный фронтовой регион
-                    territory = frontRegions[BarrierRandom.getRandomInt(frontRegions.length)];
+                    territory = enemyNeighbourRegions[BarrierRandom.getRandomInt(enemyNeighbourRegions.length)];
                     secondActor = territory.faction;
                     
                     // Устанавливаем статус WAR для территории
