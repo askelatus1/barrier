@@ -23,5 +23,5 @@ export interface INotifier {
      * @param type Тип уведомления
      */
     notify(track: Track, type: NotifyType): void;
-
+    cleanup(): void;
 }

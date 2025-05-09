@@ -40,11 +40,12 @@ const TELEGRAM_NOTIFICATION_CHAT_ID = process.env.TELEGRAM_NOTIFICATION_CHAT_ID;
 if (TELEGRAM_BOT_TOKEN) {
     const telegramBot = new TelegramBot(ctx, TELEGRAM_BOT_TOKEN);
     ctx.telegramBot = telegramBot;
-    telegramBot.start();
     
     if (TELEGRAM_NOTIFICATION_CHAT_ID) {
         telegramBot.setNotificationChatId(Number(TELEGRAM_NOTIFICATION_CHAT_ID));
     }
+    
+    telegramBot.start();
 }
 // Создаем Notifier с указанием режимов 'console' и 'telegram'
 new Notifier(ctx, ['console', 'telegram']);
@@ -57,3 +58,48 @@ new Notifier(ctx, ['console', 'telegram']);
 // ctx.eventEngine.createEventById('restore_residential_area', actor);
 
 ctx.core.start();
+
+// Добавляем обработчики для корректного завершения всех процессов
+process.once('SIGINT', () => {
+    console.log('Получен сигнал SIGINT, начинаем корректное завершение...');
+    
+    // Останавливаем основные компоненты
+    if (ctx.core) ctx.core.stop();
+    if (ctx.telegramBot) ctx.telegramBot.stop();
+    
+    // Очищаем все треки
+    if (ctx.tracker) {
+        const tracks = ctx.tracker.getAllTracks();
+        tracks.forEach(track => ctx.tracker.stopTrack(track.id));
+    }
+    
+    // Закрываем RxJS подписки
+    if (ctx.notifier) {
+        ctx.notifier.cleanup();
+    }
+    
+    console.log('Все процессы остановлены');
+    process.exit(0);
+});
+
+process.once('SIGTERM', () => {
+    console.log('Получен сигнал SIGTERM, начинаем корректное завершение...');
+    
+    // Останавливаем основные компоненты
+    if (ctx.core) ctx.core.stop();
+    if (ctx.telegramBot) ctx.telegramBot.stop();
+    
+    // Очищаем все треки
+    if (ctx.tracker) {
+        const tracks = ctx.tracker.getAllTracks();
+        tracks.forEach(track => ctx.tracker.stopTrack(track.id));
+    }
+    
+    // Закрываем RxJS подписки
+    if (ctx.notifier) {
+        ctx.notifier.cleanup();
+    }
+    
+    console.log('Все процессы остановлены');
+    process.exit(0);
+});

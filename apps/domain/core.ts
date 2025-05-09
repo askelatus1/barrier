@@ -14,7 +14,11 @@ export class GameCore {
         if(!this.scheduler) this.scheduler = setTimeout(() => this.tick(), this.timeout);
     }
     stop() {
-        if(this.scheduler) clearTimeout(this.scheduler);
+        if(this.scheduler) {
+            clearTimeout(this.scheduler);
+            this.scheduler = null;
+        }
+        console.log('Game core stopped');
     }
 
     tick(){

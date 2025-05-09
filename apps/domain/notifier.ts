@@ -4,11 +4,13 @@ import {NotifyTemplate, NotifyMode} from "../../interfaces/notify";
 export class Notifier {
     modes: NotifyMode[];
     telegramMessageBus$: Subject<string> = new Subject<string>();
+    private subscription: any;
+
     constructor(private ctx: BarrierContext, modes: NotifyMode[] = ['console']) {
         ctx.notifier = this;
         this.modes = modes;
         if(this.modes.includes('telegram')){
-            this.telegramMessageBus$.subscribe((msg) => this.ctx.telegramBot.sendMessage(msg));
+            this.subscription = this.telegramMessageBus$.subscribe((msg) => this.ctx.telegramBot.sendMessage(msg));
         }
     }
 
@@ -47,5 +49,13 @@ export class Notifier {
                     break;
             }
         });
+    }
+
+    cleanup() {
+        if (this.subscription) {
+            this.subscription.unsubscribe();
+        }
+        this.telegramMessageBus$.complete();
+        console.log('Notifier cleanup completed');
     }
 }

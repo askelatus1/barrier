@@ -99,9 +99,16 @@ export class TelegramBot {
   public start() {
     this.bot.launch();
     console.log('Telegram бот запущен');
+    this.sendMessage('Telegram бот запущен');
 
     // Корректное завершение работы бота при остановке процесса
-    process.once('SIGINT', () => this.bot.stop('SIGINT'));
-    process.once('SIGTERM', () => this.bot.stop('SIGTERM'));
+    process.once('SIGINT', () => this.stop('SIGINT'));
+    process.once('SIGTERM', () => this.stop('SIGTERM'));
+  }
+
+  // Остановка бота
+  public stop(signal?: string) {
+    this.bot.stop(signal);
+    console.log(`Telegram бот остановлен${signal ? ` (сигнал: ${signal})` : ''}`);
   }
 }
