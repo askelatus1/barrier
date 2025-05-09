@@ -44,11 +44,15 @@ if (TELEGRAM_BOT_TOKEN) {
     if (TELEGRAM_NOTIFICATION_CHAT_ID) {
         telegramBot.setNotificationChatId(Number(TELEGRAM_NOTIFICATION_CHAT_ID));
     }
-    
-    telegramBot.start();
+
+    // telegramBot.start();
 }
 // Создаем Notifier с указанием режимов 'console' и 'telegram'
-new Notifier(ctx, ['console', 'telegram']);
+new Notifier(ctx, 
+    [
+        'console', 
+        // 'telegram'
+    ]);
 
 // const actor = ctx.actorEngine.getActorById('skyline');
 // const zone = ctx.actorZoneService.getZoneByFactionId(actor.id);
@@ -60,17 +64,18 @@ new Notifier(ctx, ['console', 'telegram']);
 ctx.core.start();
 
 // Добавляем обработчики для корректного завершения всех процессов
-process.once('SIGINT', () => {
-    console.log('Получен сигнал SIGINT, начинаем корректное завершение...');
-    
+const cleanup = () => {
     // Останавливаем основные компоненты
-    if (ctx.core) ctx.core.stop();
-    if (ctx.telegramBot) ctx.telegramBot.stop();
+    if (ctx.core) {
+        ctx.core.stop();
+    }
     
     // Очищаем все треки
     if (ctx.tracker) {
         const tracks = ctx.tracker.getAllTracks();
-        tracks.forEach(track => ctx.tracker.stopTrack(track.id));
+        if (tracks) {
+            tracks.forEach(track => ctx.tracker.stopTrack(track.id));
+        }
     }
     
     // Закрываем RxJS подписки
@@ -78,28 +83,21 @@ process.once('SIGINT', () => {
         ctx.notifier.cleanup();
     }
     
+    // Останавливаем телеграм бота только если он был инициализирован
+    if (ctx.telegramBot) {
+        ctx.telegramBot.stop();
+    }
+    
     console.log('Все процессы остановлены');
     process.exit(0);
+};
+
+process.once('SIGINT', () => {
+    console.log('Получен сигнал SIGINT, начинаем корректное завершение...');
+    cleanup();
 });
 
 process.once('SIGTERM', () => {
     console.log('Получен сигнал SIGTERM, начинаем корректное завершение...');
-    
-    // Останавливаем основные компоненты
-    if (ctx.core) ctx.core.stop();
-    if (ctx.telegramBot) ctx.telegramBot.stop();
-    
-    // Очищаем все треки
-    if (ctx.tracker) {
-        const tracks = ctx.tracker.getAllTracks();
-        tracks.forEach(track => ctx.tracker.stopTrack(track.id));
-    }
-    
-    // Закрываем RxJS подписки
-    if (ctx.notifier) {
-        ctx.notifier.cleanup();
-    }
-    
-    console.log('Все процессы остановлены');
-    process.exit(0);
+    cleanup();
 });

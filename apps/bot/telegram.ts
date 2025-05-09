@@ -5,6 +5,7 @@ export class TelegramBot {
   private bot: Telegraf;
   private ctx: BarrierContext;
   private notificationChatId: number | null = null;
+  private isRunning: boolean = false;
 
   constructor(ctx: BarrierContext, token: string) {
     this.ctx = ctx;
@@ -97,7 +98,13 @@ export class TelegramBot {
 
   // Запуск бота
   public start() {
+    if (this.isRunning) {
+      console.log('Telegram бот уже запущен');
+      return;
+    }
+    
     this.bot.launch();
+    this.isRunning = true;
     console.log('Telegram бот запущен');
     this.sendMessage('Telegram бот запущен');
 
@@ -108,7 +115,13 @@ export class TelegramBot {
 
   // Остановка бота
   public stop(signal?: string) {
+    if (!this.isRunning) {
+      console.log('Telegram бот не был запущен');
+      return;
+    }
+    
     this.bot.stop(signal);
+    this.isRunning = false;
     console.log(`Telegram бот остановлен${signal ? ` (сигнал: ${signal})` : ''}`);
   }
 }
