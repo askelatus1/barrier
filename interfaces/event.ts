@@ -1,15 +1,21 @@
-import {Faction} from "./faction";
-
+import {NotifyTemplate} from "./notify";
+import {EventType, TerritoryRuleType, ActorRuleType} from "../dict/constants";
 export interface BarrierEvent {
     id: string;
+    type: EventType;
+    actionType: ActionType;
     title: string;
-    actors: Faction[];
-    actorRule: ActorType[];
-    territoryRule: ActorType[];
-    military: boolean;
+    actorRule: ActorRuleType[]; // Одно правило для захвата, два для других действий
+    territoryRule: TerritoryRuleType;
+    notify?: NotifyTemplate;
 }
-export type ActorType = 'intiator' | 'victim' | 'both' | 'random' | 'neutral';
-export interface Type {
-    id: string;
-    title: string;
+
+export enum ActionType {
+    CAPTURE = 'capture',
+    PEACE = 'peace',
+    WAR = 'war',
+    WRECKAGE = 'wreckage',
+    TRADE = 'trade',
+    DIPLOMACY = 'diplomacy',
+    ESPIONAGE = 'espionage'
 }

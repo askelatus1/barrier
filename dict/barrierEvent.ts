@@ -1,151 +1,228 @@
-import {ActorType, BarrierEvent} from "../interfaces/event";
-import {Faction} from "../interfaces/faction";
-
-export {BarrierEvent} from "../interfaces/event";
+import {BarrierContext, BarrierEvent, Faction, ActionType, Track} from "../interfaces";
+import {EventType, TerritoryRuleType, ActorRuleType} from "./constants";
 
 export const barrierEvent: BarrierEvent[] = [
     {
         id: 'infantry',
-        title: 'уничтожили пехоту',
-        actors: [],
-        actorRule: [],
-        territoryRule: [],
-        military: true,
+        title: 'атака на пехоту',
+        type: EventType.EVENT,
+        actionType: ActionType.WAR,
+        actorRule: [ActorRuleType.MILITARY, ActorRuleType.MILITARY],
+        territoryRule: TerritoryRuleType.BOTH,
+        notify: {
+            start: (ctx: BarrierContext, track: Track) => {
+                const [init, victim]: Faction[] = track.actors;
+                const territory = track.territory;
+                return `Сторона ${init.name} начала атаку на пехоту противника (${victim.name}) в секторе ${territory.title}`
+            },
+            resolve: (ctx: BarrierContext, track: Track) => {
+                const [init, victim]: Faction[] = track.actors;
+                const territory = track.territory;
+                return `Войска стороны ${init.name}, уничтожили пехоту противника (${victim.name}) в секторе ${territory.title}`
+            },
+            reject: (ctx: BarrierContext, track: Track) => {
+                const [init, victim]: Faction[] = track.actors;
+                const territory = track.territory;
+                return `Войска стороны ${init.name}, понесли потери при атаке на пехоту противника (${victim.name}) в секторе ${territory.title}`
+            },
+        }
     },
 
     {
         id: 'HTV',
-        title: 'устранили офицера',
-        actors: [],
-        actorRule: [],
-        territoryRule: [],
-        military: true,
+        title: 'ликвидация офицера',
+        type: EventType.EVENT,
+        actionType: ActionType.WAR,
+        actorRule: [ActorRuleType.MILITARY, ActorRuleType.MILITARY],
+        territoryRule: TerritoryRuleType.BOTH,
+        notify: {
+            start: (ctx: BarrierContext,  track: Track) => {
+                const [init, victim]: Faction[] = track.actors;
+                const territory = track.territory;
+                return `Сторона ${init.name} начала операцию по ликвидации офицера противника (${victim.name}) в секторе ${territory.title}`
+            },
+            resolve: (ctx: BarrierContext,  track: Track) => {
+                const [init, victim]: Faction[] = track.actors;
+                const territory = track.territory;
+                return `Войска стороны ${init.name}, уничтожили офицера противника (${victim.name}) в секторе ${territory.title}`
+            },
+            reject: (ctx: BarrierContext,  track: Track) => {
+                const [init, victim]: Faction[] = track.actors;
+                const territory = track.territory;
+                return `Войска стороны ${init.name}, не смогли устранить офицера противника (${victim.name}) в секторе ${territory.title}`
+            },
+        }
     },
 
     {
         id: 'vehicle',
-        title: 'уничтожили технику',
-        actors: [],
-        actorRule: [],
-        territoryRule: [],
-        military: true,
+        title: 'атака на технику',
+        type: EventType.EVENT,
+        actionType: ActionType.WAR,
+        actorRule: [ActorRuleType.MILITARY, ActorRuleType.MILITARY],
+        territoryRule: TerritoryRuleType.BOTH,
+        notify: {
+            start: (ctx: BarrierContext,  track: Track) => {
+                const [init, victim]: Faction[] = track.actors;
+                const territory = track.territory;
+                return `Сторона ${init.name} начала атаку на технику противника (${victim.name}) в секторе ${territory.title}`
+            },
+            resolve: (ctx: BarrierContext,  track: Track) => {
+                const [init, victim]: Faction[] = track.actors;
+                const territory = track.territory;
+                return `Войска стороны ${init.name}, уничтожили технику противника (${victim.name}) в секторе ${territory.title}`
+            },
+            reject: (ctx: BarrierContext,  track: Track) => {
+                const [init, victim]: Faction[] = track.actors;
+                const territory = track.territory;
+                return `Войска стороны ${init.name}, не смогли уничтожить технику противника (${victim.name}) в секторе ${territory.title}`
+            },
+        }
     },
-
 
     {
         id: 'drone',
-        title: 'запустили дрон-камикадзе по',
-        actors: [],
-        actorRule: [],
-        territoryRule: [],
-        military: true,
+        title: 'атака дроном-камикадзе',
+        type: EventType.EVENT,
+        actionType: ActionType.WAR,
+        actorRule: [ActorRuleType.MILITARY, ActorRuleType.MILITARY],
+        territoryRule: TerritoryRuleType.VICTIM,
+        notify: {
+            start: (ctx: BarrierContext,  track: Track) => {
+                const [init, victim]: Faction[] = track.actors;
+                const territory = track.territory;
+                return `Сторона ${init.name} запустила дрон-камикадзе по позициям противника (${victim.name}) в секторе ${territory.title}`
+            },
+            resolve: (ctx: BarrierContext,  track: Track) => {
+                const [init, victim]: Faction[] = track.actors;
+                const territory = track.territory;
+                return `Дрон-камикадзе стороны ${init.name} успешно поразил цели противника (${victim.name}) в секторе ${territory.title}`
+            },
+            reject: (ctx: BarrierContext,  track: Track) => {
+                const [init, victim]: Faction[] = track.actors;
+                const territory = track.territory;
+                return `Дрон-камикадзе стороны ${init.name} был перехвачен противником (${victim.name}) в секторе ${territory.title}`
+            },
+        }
     },
 
     {
         id: 'detonation',
-        title: 'подорвали оружейный склад',
-        actors: [],
-        actorRule: [],
-        territoryRule: [],
-        military: true,
+        title: 'подрыв оружейного склада',
+        type: EventType.EVENT,
+        actionType: ActionType.WAR,
+        actorRule: [ActorRuleType.MILITARY, ActorRuleType.MILITARY],
+        territoryRule: TerritoryRuleType.VICTIM,
+        notify: {
+            start: (ctx: BarrierContext,  track: Track) => {
+                const [init, victim]: Faction[] = track.actors;
+                const territory = track.territory;
+                return `Сторона ${init.name} начала операцию по подрыву оружейного склада противника (${victim.name}) в секторе ${territory.title}`
+            },
+            resolve: (ctx: BarrierContext,  track: Track) => {
+                const [init, victim]: Faction[] = track.actors;
+                const territory = track.territory;
+                return `Оружейный склад противника (${victim.name}) успешно уничтожен в секторе ${territory.title}`
+            },
+            reject: (ctx: BarrierContext,  track: Track) => {
+                const [init, victim]: Faction[] = track.actors;
+                const territory = track.territory;
+                return `Попытка подрыва оружейного склада стороны ${init.name} была предотвращена противником (${victim.name}) в секторе ${territory.title}`
+            },
+        }
     },
 
     {
         id: 'trade',
-        title: 'наладили торговые отношения',
-        actors: [],
-        actorRule: [],
-        territoryRule: [],
-        military: false,
+        title: 'установление торговых отношений',
+        type: EventType.EVENT,
+        actionType: ActionType.TRADE,
+        actorRule: [ActorRuleType.CIVILIAN, ActorRuleType.CIVILIAN],
+        territoryRule: TerritoryRuleType.BOTH,
+        notify: {
+            start: (ctx: BarrierContext,  track: Track) => {
+                const [init, victim]: Faction[] = track.actors;
+                return `Сторона ${init.name} начала переговоры об установлении торговых отношений с (${victim.name})`
+            },
+            resolve: (ctx: BarrierContext,  track: Track) => {
+                const [init, victim]: Faction[] = track.actors;
+                return `Сторона ${init.name} успешно наладила торговые отношения с (${victim.name})`
+            },
+            reject: (ctx: BarrierContext,  track: Track) => {
+                const [init, victim]: Faction[] = track.actors;
+                return `Сторона ${init.name}, не смогла наладить торговые отношения с (${victim.name})`
+            },
+        }
     },
     {
         id: 'artillery',
         title: 'работают артилерией по позициям',
-        actors: [],
-        actorRule: [],
-        territoryRule: [],
-        military: true,
+        type: EventType.EVENT,
+        actionType: ActionType.WAR,
+        actorRule: [ActorRuleType.MILITARY, ActorRuleType.MILITARY],
+        territoryRule: TerritoryRuleType.BOTH,
+        notify: {
+            start: (ctx: BarrierContext,  track: Track) => {
+                const [init, victim]: Faction[] = track.actors;
+                const territory = track.territory;
+                return `Сторона ${init.name} начала артиллерийский обстрел позиций противника (${victim.name}) в секторе ${territory.title}`
+            },
+            resolve: (ctx: BarrierContext,  track: Track) => {
+                const [init, victim]: Faction[] = track.actors;
+                const territory = track.territory;
+                return `Артиллерийский обстрел стороны ${init.name} успешно поразил цели противника (${victim.name}) в секторе ${territory.title}`
+            },
+            reject: (ctx: BarrierContext,  track: Track) => {
+                const [init, victim]: Faction[] = track.actors;
+                const territory = track.territory;
+                return `Артиллерийский обстрел стороны ${init.name} не смог поразить цели противника (${victim.name}) в секторе ${territory.title}`
+            },
+        }
     },
 
     {
         id: 'scientific',
         title: 'наладили научные отношения',
-        actors: [],
-        actorRule: [],
-        territoryRule: [],
-        military: false,
+        type: EventType.EVENT,
+        actionType: ActionType.DIPLOMACY,
+        actorRule: [ActorRuleType.MILITARY, ActorRuleType.MILITARY],
+        territoryRule: TerritoryRuleType.BOTH,
+        notify: {
+            start: (ctx: BarrierContext,  track: Track) => {
+                const [init, victim]: Faction[] = track.actors;
+                return `Сторона ${init.name} начала переговоры о научном сотрудничестве с (${victim.name})`
+            },
+            resolve: (ctx: BarrierContext,  track: Track) => {
+                const [init, victim]: Faction[] = track.actors;
+                return `Сторона ${init.name} успешно наладила научное сотрудничество с (${victim.name})`
+            },
+            reject: (ctx: BarrierContext,  track: Track) => {
+                const [init, victim]: Faction[] = track.actors;
+                return `Сторона ${init.name} не смогла договориться о научном сотрудничестве с (${victim.name})`
+            },
+        }
     },
 
     {
         id: 'humanitarian',
         title: 'проводят гумунитарную помощь',
-        actors: [],
-        actorRule: [],
-        territoryRule: [],
-        military: false,
+        type: EventType.EVENT,
+        actionType: ActionType.PEACE,
+        actorRule: [ActorRuleType.ALL, ActorRuleType.CIVILIAN],
+        territoryRule: TerritoryRuleType.BOTH,
+        notify: {
+            start: (ctx: BarrierContext,  track: Track) => {
+                const [init, victim]: Faction[] = track.actors;
+                return `Сторона ${init.name} начала доставку гуманитарной помощи для (${victim.name})`
+            },
+            resolve: (ctx: BarrierContext,  track: Track) => {
+                const [init, victim]: Faction[] = track.actors;
+                return `Сторона ${init.name} успешно доставила гуманитарную помощь для (${victim.name})`
+            },
+            reject: (ctx: BarrierContext,  track: Track) => {
+                const [init, victim]: Faction[] = track.actors;
+                return `Сторона ${init.name} не смогла доставить гуманитарную помощь для (${victim.name})`
+            },
+        }
     },
-
-
-]
-
-export const StepEvent: BarrierEvent[] = [
-    {
-        id: 'attack',
-        title: 'наступают на',
-        actors: [],
-        actorRule: [],
-        territoryRule: [],
-        military: true,
-    },
-    {
-        id: 'negotiation',
-        title: 'начали перероворы с',
-        actors: [],
-        actorRule: [],
-        territoryRule: [],
-        military: true,
-    },
-    {
-        id: 'capture',
-        title: 'захватили территорию',
-        actors: [],
-        actorRule: [],
-        territoryRule: [],
-        military: true,
-    },
-    {
-        id: 'peace',
-        title: 'заключиои мир с',
-        actors: [],
-        actorRule: [],
-        territoryRule: [],
-        military: false,
-    },
-    {
-        id: 'negotiation',
-        title: 'переговоры сорваны. Бои продолжаются',
-        actors: [],
-        actorRule: [],
-        territoryRule: [],
-        military: false,
-    },
-]
-
-export const postWarEvent: BarrierEvent[] = [
-    {
-        id: 'cleaningСompleted',
-        title: 'очистка обломков успешно звершена',
-        actors: [],
-        actorRule: [],
-        territoryRule: [],
-        military: false,
-    },
-    {
-        id: 'wreckage',
-        title: 'проводят очистку района от обломков',
-        actors: [],
-        actorRule: [],
-        territoryRule: [],
-        military: false,
-    },
-    ]
+];

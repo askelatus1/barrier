@@ -1,5 +1,14 @@
-import {BarrierContext} from "./interfaces/core";
-import {BarrierRandom, BarrierTracker, EventEngine, GameCore} from "./apps/domain";
+import {BarrierContext, MilitaryFaction} from "./interfaces";
+import {BarrierTracker, EventEngine, GameCore} from "./apps/domain";
+import {Notifier} from "./apps/domain/notifier";
+import {ActorEngine} from "./apps/domain/actors";
+import {ActorZoneService} from "./apps/domain/actorZone";
+import { RegionService } from "./apps/domain/regions";
+import { TelegramBot } from "./apps/bot";
+import * as dotenv from 'dotenv';
+
+// Загружаем переменные окружения из .env файла
+dotenv.config();
 
 console.log('Engine init');
 
@@ -7,26 +16,90 @@ const ctx: BarrierContext = {
     core: undefined,
     eventEngine: undefined,
     tracker: undefined,
-    random: undefined,
+    notifier: undefined,
+    actorEngine: undefined,
+    regionService: undefined,
+    actorZoneService: undefined,
+    telegramBot: undefined,
 };
 
-new GameCore(ctx, 5000);
+new GameCore(ctx, 1000);
 new EventEngine(ctx);
 new BarrierTracker(ctx);
-new BarrierRandom(ctx);
 
-console.log('random: ', ctx.random.selectRandomUniq([1,2,3,4,5,6,7,8,9], 3));
-console.log('random: ', ctx.random.selectRandomUniq([1,2,3,4,5,6,7,8,9], 3));
-console.log('random: ', ctx.random.selectRandomUniq([1,2,3,4,5,6,7,8,9], 3));
-console.log('random: ', ctx.random.selectRandomUniq([1,2,3,4,5,6,7,8,9], 3));
-console.log('random: ', ctx.random.selectRandomUniq([1,2,3,4,5,6,7,8,9], 3));
-console.log('random: ', ctx.random.selectRandomUniq([1,2,3,4,5,6,7,8,9], 3));
-console.log('randomItem: ', ctx.random.selectRandom([1,2,3,4,5,6,7,8,9]));
-console.log('randomItem: ', ctx.random.selectRandom([1,2,3,4,5,6,7,8,9]));
-console.log('randomItem: ', ctx.random.selectRandom([1,2,3,4,5,6,7,8,9]));
-console.log('randomItem: ', ctx.random.selectRandom([1,2,3,4,5,6,7,8,9]));
-console.log('randomItem: ', ctx.random.selectRandom([1,2,3,4,5,6,7,8,9]));
-console.log('randomItem: ', ctx.random.selectRandom([1,2,3,4,5,6,7,8,9]));
-console.log('randomItem: ', ctx.random.selectRandom([1,2,3,4,5,6,7,8,9]));
-console.log('randomItem: ', ctx.random.selectRandom([1,2,3,4,5,6,7,8,9]));
 
+new RegionService(ctx);
+new ActorEngine(ctx);
+new ActorZoneService(ctx);
+
+// Инициализируем телеграм-бота, если задан токен в переменных окружения
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const TELEGRAM_NOTIFICATION_CHAT_ID = process.env.TELEGRAM_NOTIFICATION_CHAT_ID;
+if (TELEGRAM_BOT_TOKEN) {
+    const telegramBot = new TelegramBot(ctx, TELEGRAM_BOT_TOKEN);
+    ctx.telegramBot = telegramBot;
+    
+    if (TELEGRAM_NOTIFICATION_CHAT_ID) {
+        telegramBot.setNotificationChatId(Number(TELEGRAM_NOTIFICATION_CHAT_ID));
+    }
+
+    telegramBot.start();
+}
+// Создаем Notifier с указанием режимов 'console' и 'telegram'
+new Notifier(ctx, 
+    [
+        'console', 
+        'telegram'
+    ]);
+
+// const monolith = ctx.actorEngine.getActorById('monolith') as MilitaryFaction;
+// const sin = ctx.actorEngine.getActorById('sin') as MilitaryFaction;
+// const region = ctx.regionService.getRegionById('center');
+// region.faction = sin;
+// const zone = ctx.actorZoneService.getZoneByFactionId(actor.id);
+// ctx.actorZoneService.refreshZone(zone);
+// console.log(`regions by faction: ${zone.regions.map(r => r.id)}`);
+// zone.regions[0].status = RegionStatus.WRECKAGE;
+
+// ctx.eventEngine.createEventById('refugee_crisis', monolith);
+
+ctx.core.start();
+
+// Добавляем обработчики для корректного завершения всех процессов
+const cleanup = () => {
+    // Останавливаем основные компоненты
+    if (ctx.core) {
+        ctx.core.stop();
+    }
+    
+    // Очищаем все треки
+    if (ctx.tracker) {
+        const tracks = ctx.tracker.getAllTracks();
+        if (tracks) {
+            tracks.forEach(track => ctx.tracker.stopTrack(track.id));
+        }
+    }
+    
+    // Закрываем RxJS подписки
+    if (ctx.notifier) {
+        ctx.notifier.cleanup();
+    }
+    
+    // Останавливаем телеграм бота только если он был инициализирован
+    if (ctx.telegramBot) {
+        ctx.telegramBot.stop();
+    }
+    
+    console.log('Все процессы остановлены');
+    process.exit(0);
+};
+
+process.once('SIGINT', () => {
+    console.log('Получен сигнал SIGINT, начинаем корректное завершение...');
+    cleanup();
+});
+
+process.once('SIGTERM', () => {
+    console.log('Получен сигнал SIGTERM, начинаем корректное завершение...');
+    cleanup();
+});
