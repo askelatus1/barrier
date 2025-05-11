@@ -21,7 +21,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "dotenv": "^16.4.5",
+    "@types/cors": "^2.8.18",
+    "@types/express": "^5.0.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
     "dotenv-vault": "^1.26.1",
     "express": "^5.1.0",
     "rxjs": "^7.8.2",

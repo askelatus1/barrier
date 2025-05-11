@@ -306,4 +306,21 @@ export interface IActorZoneService {
      * @returns Массив соседних регионов, соответствующих правилу
      */
     getNeighbourRegionsByTerritoryRule(zone: ActorZone, rule: TerritoryRuleType): Region[];
+}
+
+export interface IApiService {
+    /**
+     * Starts the API server
+     */
+    start(): Promise<void>;
+
+    /**
+     * Stops the API server
+     */
+    stop(): Promise<void>;
+
+    /**
+     * Gets the current server status
+     */
+    isRunning(): boolean;
 } 
