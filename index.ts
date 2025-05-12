@@ -67,7 +67,7 @@ new Notifier(ctx,
 ctx.apiService.start();
 
 // Добавляем обработчики для корректного завершения всех процессов
-const cleanup = () => {
+const cleanup = async (signal?: string) => {
     // Останавливаем основные компоненты
     if (ctx.core) {
         ctx.core.stop();
@@ -88,19 +88,19 @@ const cleanup = () => {
     
     // Останавливаем телеграм бота только если он был инициализирован
     if (ctx.telegramBot) {
-        ctx.telegramBot.stop();
+        await ctx.telegramBot.stop(signal);
     }
     
     console.log('Все процессы остановлены');
-    process.exit(0);
+    Promise.resolve(process.exit(0));
 };
 
 process.once('SIGINT', () => {
     console.log('Получен сигнал SIGINT, начинаем корректное завершение...');
-    cleanup();
+    cleanup('SIGINT');
 });
 
 process.once('SIGTERM', () => {
     console.log('Получен сигнал SIGTERM, начинаем корректное завершение...');
-    cleanup();
+    cleanup('SIGTERM');
 });

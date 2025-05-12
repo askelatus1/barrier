@@ -1,6 +1,8 @@
 import { Telegraf, Context as TelegrafContext } from 'telegraf';
 import { BarrierContext } from '../../interfaces';
 
+const BOT_STOP_TIMEOUT = Number(process.env.BOT_STOP_TIMEOUT) || 5000; // таймаут в миллисекундах
+
 export class TelegramBot {
   private bot: Telegraf;
   private ctx: BarrierContext;
@@ -84,37 +86,58 @@ export class TelegramBot {
   }
 
   // Метод для отправки сообщения конкретному пользователю
-  public sendMessage(message: string) {
-    this.bot.telegram.sendMessage(this.notificationChatId, message)
-      .catch(error => console.error('Ошибка при отправке сообщения:', error));
+  public async sendMessage(message: string) {
+    if (this.notificationChatId) {
+      try {
+        await this.bot.telegram.sendMessage(this.notificationChatId, message);
+      } catch (error) {
+        console.error('Ошибка при отправке сообщения:', error);
+      }
+    }
   }
 
   // Запуск бота
-  public start() {
+  public async start() {
     if (this.isRunning) {
       console.log('Telegram бот уже запущен');
       return;
     }
     
-    this.bot.launch();
-    this.isRunning = true;
-    console.log('Telegram бот запущен');
-    this.sendMessage('Telegram бот запущен');
-
-    // Корректное завершение работы бота при остановке процесса
-    process.once('SIGINT', () => this.stop('SIGINT'));
-    process.once('SIGTERM', () => this.stop('SIGTERM'));
+    try {
+      // Запускаем бота и проверяем его готовность
+      this.bot.launch();
+      await this.bot.telegram.getMe();
+      
+      this.isRunning = true;
+      console.log('Telegram бот запущен');
+      await this.sendMessage('Telegram бот запущен');
+    } catch (error) {
+      this.isRunning = false;
+      console.error('Ошибка при запуске бота:', error);
+      throw error;
+    }
   }
 
   // Остановка бота
-  public stop(signal?: string) {
+  public async stop(signal?: string) {
+    console.log('Остановка бота', signal);
     if (!this.isRunning) {
-      console.log('Telegram бот не был запущен');
+      console.log(`Telegram бот не был запущен${signal ? ` (сигнал: ${signal})` : ''}`);
       return;
     }
     
-    this.bot.stop(signal);
-    this.isRunning = false;
-    console.log(`Telegram бот остановлен${signal ? ` (сигнал: ${signal})` : ''}`);
+    try {
+      await this.sendMessage('Telegram бот остановлен');
+      // Используем Promise.race чтобы не зависнуть, если бот не ответит
+      await Promise.race([
+        this.bot.stop(signal),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout stopping bot')), BOT_STOP_TIMEOUT))
+      ]);
+      this.isRunning = false;
+      console.log(`Telegram бот остановлен${signal ? ` (сигнал: ${signal})` : ''}`);
+    } catch (error) {
+      console.error('Ошибка при остановке бота:', error);
+      throw error;
+    }
   }
 }
