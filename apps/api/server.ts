@@ -123,6 +123,64 @@ export class ApiService implements IApiService {
             res.json(event);
         });
 
+        // Tracks endpoints
+        this.app.get('/api/tracks', (req, res) => {
+            const tracks = this.ctx.tracker.getAllTracks();
+            res.json(tracks);
+        });
+
+        this.app.get('/api/tracks/:trackId', (req, res) => {
+            const { trackId } = req.params;
+            const tracks = this.ctx.tracker.getAllTracks();
+            const track = tracks.find(t => t.id === trackId);
+            
+            if (!track) {
+                res.status(404).json({ error: `Track with id ${trackId} not found` });
+                return;
+            }
+            res.json(track);
+        });
+
+        this.app.delete('/api/tracks/:trackId', (req, res) => {
+            try {
+                const { trackId } = req.params;
+                this.ctx.tracker.stopTrack(trackId);
+                res.status(200).json({ message: 'Track stopped successfully' });
+            } catch (error) {
+                console.error('Error stopping track:', error);
+                res.status(500).json({ error: 'Failed to stop track' });
+            }
+        });
+
+        this.app.post('/api/tracks', (req, res) => {
+            try {
+                const { eventId, actorId } = req.body;
+
+                if (!eventId || !actorId) {
+                    res.status(400).json({ error: 'Event ID and Actor ID are required' });
+                    return;
+                }
+
+                const actor = this.ctx.actorEngine.getActorById(actorId);
+                if (!actor) {
+                    res.status(404).json({ error: `Actor with id ${actorId} not found` });
+                    return;
+                }
+
+                const event = this.ctx.eventEngine.getEventById(eventId);
+                if (!event) {
+                    res.status(404).json({ error: `Event with id ${eventId} not found` });
+                    return;
+                }
+
+                this.ctx.eventEngine.createEventById(eventId, actor);
+                res.status(201).json({ message: 'Track created successfully' });
+            } catch (error) {
+                console.error('Error creating track:', error);
+                res.status(500).json({ error: 'Failed to create track' });
+            }
+        });
+
         // Error handling middleware
         this.app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
             console.error(err.stack);

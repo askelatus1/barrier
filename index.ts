@@ -43,13 +43,13 @@ if (TELEGRAM_BOT_TOKEN) {
         telegramBot.setNotificationChatId(Number(TELEGRAM_NOTIFICATION_CHAT_ID));
     }
 
-    telegramBot.start();
+    // telegramBot.start();
 }
 // Создаем Notifier с указанием режимов 'console' и 'telegram'
 new Notifier(ctx, 
     [
         'console', 
-        'telegram'
+        // 'telegram'
     ]);
 
 // const monolith = ctx.actorEngine.getActorById('monolith') as MilitaryFaction;
