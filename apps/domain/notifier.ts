@@ -1,6 +1,7 @@
 import { Subject } from "rxjs";
 import {BarrierContext, Track} from "../../interfaces";
 import {NotifyTemplate, NotifyMode} from "../../interfaces/notify";
+
 export class Notifier {
     modes: NotifyMode[];
     telegramMessageBus$: Subject<string> = new Subject<string>();

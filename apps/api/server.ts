@@ -11,6 +11,7 @@ export class ApiService implements IApiService {
     private app: express.Application;
     private server: any;
     private isServerRunning: boolean = false;
+    private eventSubscribers: Set<express.Response> = new Set();
 
     constructor(private ctx: BarrierContext) {
         this.ctx.apiService = this;
@@ -22,6 +23,23 @@ export class ApiService implements IApiService {
     private setupMiddleware(): void {
         this.app.use(cors());
         this.app.use(express.json());
+    }
+
+    /**
+     * Отправляет событие всем подписчикам
+     * @param event Событие для отправки
+     */
+    public broadcastEvent(event: { type: string; data: any }): void {
+        const eventString = `data: ${JSON.stringify(event)}\n\n`;
+        
+        this.eventSubscribers.forEach(client => {
+            try {
+                client.write(eventString);
+            } catch (error) {
+                console.error('Error sending SSE:', error);
+                this.eventSubscribers.delete(client);
+            }
+        });
     }
 
     private setupRoutes(): void {
@@ -179,6 +197,33 @@ export class ApiService implements IApiService {
                 console.error('Error creating track:', error);
                 res.status(500).json({ error: 'Failed to create track' });
             }
+        });
+
+        // SSE endpoint for application events
+        this.app.get('/api/events/stream', (req, res) => {
+            // Настройка SSE соединения
+            res.writeHead(200, {
+                'Content-Type': 'text/event-stream',
+                'Cache-Control': 'no-cache',
+                'Connection': 'keep-alive'
+            });
+            res.write('\n');
+
+            // Добавляем клиента в список подписчиков
+            this.eventSubscribers.add(res);
+
+            // Отправляем начальное сообщение
+            this.broadcastEvent({
+                type: 'connection_established',
+                data: {
+                    message: 'Connected to event stream'
+                }
+            });
+
+            // Обработка закрытия соединения
+            req.on('close', () => {
+                this.eventSubscribers.delete(res);
+            });
         });
 
         // Error handling middleware
