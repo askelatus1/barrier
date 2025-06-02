@@ -229,6 +229,18 @@ export class BarrierTracker {
             };
             
             this.#addTrack(track);
+
+            // Отправляем событие в API
+            this.ctx.apiService.broadcastEvent({
+                type: 'track_created',
+                data: {
+                    trackId: track.id,
+                    eventId: track.eventId,
+                    territoryId: track.territory?.id,
+                    actors: track.actors.map(actor => actor.id)
+                }
+            });
+
         } catch (error) {
             console.error('Failed to track event:', {
                 error: error.message,

@@ -308,6 +308,14 @@ export interface IActorZoneService {
     getNeighbourRegionsByTerritoryRule(zone: ActorZone, rule: TerritoryRuleType): Region[];
 }
 
+/**
+ * Базовый интерфейс для всех SSE событий
+ */
+export interface ServerSentEvent {
+    type: string;
+    data: any;
+}
+
 export interface IApiService {
     /**
      * Starts the API server
@@ -323,4 +331,10 @@ export interface IApiService {
      * Gets the current server status
      */
     isRunning(): boolean;
+
+    /**
+     * Отправляет событие всем подключенным SSE клиентам
+     * @param event Событие для отправки
+     */
+    broadcastEvent(event: ServerSentEvent): void;
 } 

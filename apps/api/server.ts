@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { config } from 'dotenv';
 import { BarrierContext } from '../../interfaces';
-import { IApiService } from '../../interfaces/services';
+import { IApiService, ServerSentEvent } from '../../interfaces/services';
 
 // Load environment variables
 config();
@@ -29,7 +29,7 @@ export class ApiService implements IApiService {
      * Отправляет событие всем подписчикам
      * @param event Событие для отправки
      */
-    public broadcastEvent(event: { type: string; data: any }): void {
+    public broadcastEvent(event: ServerSentEvent): void {
         const eventString = `data: ${JSON.stringify(event)}\n\n`;
         
         this.eventSubscribers.forEach(client => {
