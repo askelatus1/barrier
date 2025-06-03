@@ -1,6 +1,6 @@
 import {BarrierContext, BarrierEvent, Track, Faction, Region, MilitaryFaction} from "../../interfaces";
 import {BarrierRandom} from "./random";
-import {TIMEOUTS, ActorType, NotifyType, RegionStatus, TerritoryRuleType} from "../../dict/constants";
+import {TIMEOUTS, ActorType, NotifyType, RegionStatus, TerritoryRuleType, TrackEventType} from "../../dict/constants";
 import {ActionType} from "../../interfaces/event";
 
 /**
@@ -290,6 +290,19 @@ export class BarrierTracker {
         }
         console.log(`track ${track.id} ending with status: ${status}`);
         this.ctx.notifier.notify(track, notifyType);
+
+        // Отправляем событие об обновлении статуса
+        this.ctx.apiService.broadcastEvent({
+            type: TrackEventType.UPDATED,
+            data: {
+                trackId: track.id,
+                eventId: track.eventId,
+                status: status,
+                territoryId: track.territory?.id,
+                actors: track.actors.map(actor => actor.id)
+            }
+        });
+
         this.#removeTrack(track);
     }
 

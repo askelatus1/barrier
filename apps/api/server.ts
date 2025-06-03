@@ -3,6 +3,7 @@ import cors from 'cors';
 import { config } from 'dotenv';
 import { BarrierContext } from '../../interfaces';
 import { IApiService, ServerSentEvent } from '../../interfaces/services';
+import { TrackEventType } from '../../dict/constants';
 
 // Load environment variables
 config();
@@ -159,17 +160,6 @@ export class ApiService implements IApiService {
             res.json(track);
         });
 
-        this.app.delete('/api/tracks/:trackId', (req, res) => {
-            try {
-                const { trackId } = req.params;
-                this.ctx.tracker.stopTrack(trackId);
-                res.status(200).json({ message: 'Track stopped successfully' });
-            } catch (error) {
-                console.error('Error stopping track:', error);
-                res.status(500).json({ error: 'Failed to stop track' });
-            }
-        });
-
         this.app.post('/api/tracks', (req, res) => {
             try {
                 const { eventId, actorId } = req.body;
@@ -192,10 +182,29 @@ export class ApiService implements IApiService {
                 }
 
                 this.ctx.eventEngine.createEventById(eventId, actor);
+                this.broadcastEvent({
+                    type: TrackEventType.CREATED,
+                    data: { eventId, actorId }
+                });
                 res.status(201).json({ message: 'Track created successfully' });
             } catch (error) {
                 console.error('Error creating track:', error);
                 res.status(500).json({ error: 'Failed to create track' });
+            }
+        });
+
+        this.app.delete('/api/tracks/:trackId', (req, res) => {
+            try {
+                const { trackId } = req.params;
+                this.ctx.tracker.stopTrack(trackId);
+                this.broadcastEvent({
+                    type: TrackEventType.STOPPED,
+                    data: { trackId }
+                });
+                res.status(200).json({ message: 'Track stopped successfully' });
+            } catch (error) {
+                console.error('Error stopping track:', error);
+                res.status(500).json({ error: 'Failed to stop track' });
             }
         });
 

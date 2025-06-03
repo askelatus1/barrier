@@ -2,7 +2,7 @@ import {Region} from "./region";
 import {Faction} from "./faction";
 import {FactionId} from "./faction";
 import {ActorZone} from "./index";
-import {ActorType, RegionStatus, ActorRuleType, TerritoryRuleType} from "../dict/constants";
+import {ActorType, RegionStatus, ActorRuleType, TerritoryRuleType, TrackEventType} from "../dict/constants";
 
 /**
  * Interface for managing regions in the system
@@ -312,7 +312,7 @@ export interface IActorZoneService {
  * Базовый интерфейс для всех SSE событий
  */
 export interface ServerSentEvent {
-    type: string;
+    type: TrackEventType | string;
     data: any;
 }
 

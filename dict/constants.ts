@@ -49,6 +49,12 @@ export enum NotifyType {
     REJECT = 'reject'
 }
 
+export enum TrackEventType {
+    CREATED = 'track_created',
+    UPDATED = 'track_updated',
+    STOPPED = 'track_stopped'
+}
+
 export const TIMEOUTS = {
     DEFAULT: 1000,
     EVENT: 1000
