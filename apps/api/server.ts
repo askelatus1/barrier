@@ -179,12 +179,8 @@ export class ApiService implements IApiService {
         this.app.get('/api/tracks', (req, res) => {
             const tracks = this.ctx.tracker.getAllTracks();
             const trackResponses: TrackResponse[] = tracks.map(track => ({
-                id: track.id,
-                eventId: track.eventId,
-                timeout: track.timeout,
-                territoryId: track.territory?.id,
-                actorIds: track.actors.map(actor => actor.id),
-                status: track.status
+                ...track,
+                scheduler: undefined
             }));
             res.json(trackResponses);
         });
@@ -193,6 +189,7 @@ export class ApiService implements IApiService {
             const { trackId } = req.params;
             const tracks = this.ctx.tracker.getAllTracks();
             const track = tracks.find(t => t.id === trackId);
+            delete track?.scheduler;
             
             if (!track) {
                 res.status(404).json({ error: `Track with id ${trackId} not found` });
@@ -200,12 +197,7 @@ export class ApiService implements IApiService {
             }
 
             const trackResponse: TrackResponse = {
-                id: track.id,
-                eventId: track.eventId,
-                timeout: track.timeout,
-                territoryId: track.territory?.id,
-                actorIds: track.actors.map(actor => actor.id),
-                status: track.status
+                ...track,
             };
             res.json(trackResponse);
         });

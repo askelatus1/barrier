@@ -7,6 +7,7 @@ export interface Track {
     eventId: string;
     timeout?: number;
     territory?: Region;
+    affectorTerritory?: Region;
     actors: Faction[];
     status?: 'resolve' | 'reject';
     scheduler?: NodeJS.Timeout;
@@ -16,7 +17,8 @@ export interface TrackResponse {
     id: string;
     eventId: string;
     timeout?: number;
-    territoryId?: string;
-    actorIds: string[];
+    territory?: Region;
+    affectorTerritory?: Region;
+    actors: Faction[];
     status?: 'resolve' | 'reject';
 }

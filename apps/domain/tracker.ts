@@ -204,6 +204,13 @@ export class BarrierTracker {
                 eventId: event.id,
                 timeout: BarrierRandom.getRandomIntInRange(TIMEOUTS.TRACK_TICK_MIN, TIMEOUTS.TRACK_TICK_MAX),
                 territory,
+                affectorTerritory: firstActor.type === ActorType.MILITARY 
+                    ? (event.actionType === ActionType.WAR && territory
+                        ? this.ctx.regionService.getNeighbourRegions(territory.id)
+                            .find(region => this.ctx.actorZoneService.getZoneByFactionId(firstActor.id)?.regions
+                                .some(r => r.id === region.id))
+                        : BarrierRandom.selectRandom(this.ctx.actorZoneService.getZoneByFactionId(firstActor.id)?.regions))
+                    : this.ctx.regionService.getRegionById(firstActor.baseRegion),
                 actors
             };
             

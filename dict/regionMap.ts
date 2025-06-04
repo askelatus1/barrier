@@ -45,7 +45,7 @@ export const regionMap: Region[] = [
     {
         id: 'cerdavino',
         title: 'сердавино',
-        status: RegionStatus.WRECKAGE,
+        status: RegionStatus.PEACE,
         neighbour: ['mongora' , 'Piter' , 'varlamono'],
         faction: null
     },
