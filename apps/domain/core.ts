@@ -1,10 +1,10 @@
 import {ActionType, BarrierContext} from "../../interfaces";
 import {BarrierRandom} from "./random";
-import {ActorType} from "../../dict/constants";
+import {ActorType, CORE_TTL_MAX, CORE_TTL_MIN, TIMEOUTS} from "../../dict/constants";
 
 export class GameCore {
     ttl: number = 0;
-    constructor(private ctx: BarrierContext, public timeout = 5000) {
+    constructor(private ctx: BarrierContext, public timeout = TIMEOUTS.GAME_TICK) {
         ctx.core = this;
         this.ttl = BarrierRandom.getRandomInt(10);
     }
@@ -25,13 +25,13 @@ export class GameCore {
         // logic
         console.log('Game core ticked', performance.now());
         if(this.ttl <= 0) this.addEvent();
-        this.scheduler = setTimeout(() => this.tick(), this.timeout);
+        this.scheduler = setTimeout(() => this.tick(), BarrierRandom.getRandomIntInRange(TIMEOUTS.GAME_TICK_MIN, TIMEOUTS.GAME_TICK_MAX));
         this.ttl--;
     }
 
     addEvent(): void {
         console.log('Game core addEvent fired: ', performance.now());
-        this.ttl = BarrierRandom.getRandomInt(10);
+        this.ttl = BarrierRandom.getRandomIntInRange(CORE_TTL_MIN, CORE_TTL_MAX);
        
         // Создаем пул доступных событий
         let availableEvents: any[] = [];

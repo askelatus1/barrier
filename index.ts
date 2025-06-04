@@ -1,3 +1,7 @@
+// Загружаем переменные окружения из .env файла
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 import {BarrierContext} from "./interfaces";
 import {BarrierTracker, EventEngine, GameCore} from "./apps/domain";
 import {Notifier} from "./apps/domain/notifier";
@@ -5,10 +9,7 @@ import {ActorEngine} from "./apps/domain/actors";
 import {ActorZoneService} from "./apps/domain/actorZone";
 import { RegionService } from "./apps/domain/regions";
 import { TelegramBot } from "./apps/bot";
-import * as dotenv from 'dotenv';
 import { ApiService } from "./apps/api";
-// Загружаем переменные окружения из .env файла
-dotenv.config();
 
 console.log('Engine init');
 

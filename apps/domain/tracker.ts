@@ -2,7 +2,6 @@ import {BarrierContext, BarrierEvent, Track, Faction, Region, MilitaryFaction} f
 import {BarrierRandom} from "./random";
 import {TIMEOUTS, ActorType, NotifyType, RegionStatus, TerritoryRuleType, TrackEventType} from "../../dict/constants";
 import {ActionType} from "../../interfaces/event";
-import {TrackResponse} from "../../interfaces/track";
 
 /**
  * Трекер событий игры. Отслеживает и управляет жизненным циклом событий.
@@ -10,29 +9,8 @@ import {TrackResponse} from "../../interfaces/track";
 export class BarrierTracker {
     private pool: Map<string, Track> = new Map();
 
-    constructor(private ctx: BarrierContext, private timeoutRange = TIMEOUTS.DEFAULT) {
+    constructor(private ctx: BarrierContext) {
         ctx.tracker = this;
-    }
-
-    /**
-     * Получает список акторов из соседних регионов
-     * @param rule Тип актора (военный/гражданский)
-     * @param firstActor Первый актор, относительно которого ищутся соседи
-     * @returns Массив акторов из соседних регионов
-     */
-    private getNeighbourActors(rule: ActorType, firstActor: Faction): Faction[] {
-        if (!firstActor) {
-            console.warn('First actor is undefined');
-            return [];
-        }
-
-        const actorZone = this.ctx.actorZoneService.getZoneByFactionId(firstActor.id);
-        if (!actorZone) {
-            console.warn(`Actor zone not found for faction ${firstActor.id}`);
-            return [];
-        }
-
-        return this.ctx.actorZoneService.getNeighbourActorsByType(actorZone, rule);
     }
 
     /**
@@ -224,7 +202,7 @@ export class BarrierTracker {
             const track: Track = {
                 id: crypto.randomUUID(),
                 eventId: event.id,
-                timeout: BarrierRandom.getRandomInt(this.timeoutRange),
+                timeout: BarrierRandom.getRandomIntInRange(TIMEOUTS.TRACK_TICK_MIN, TIMEOUTS.TRACK_TICK_MAX),
                 territory,
                 actors
             };
@@ -263,7 +241,7 @@ export class BarrierTracker {
 
     #addTrack(track: Track) {
         const targetTrack: Track = {...track};
-        targetTrack.scheduler = setTimeout(() => this.#handleTrackCompletion(targetTrack), track.timeout ?? this.timeoutRange);
+        targetTrack.scheduler = setTimeout(() => this.#handleTrackCompletion(targetTrack), track.timeout);
         this.pool.set(targetTrack.id, targetTrack);
         this.ctx.notifier.notify(track, NotifyType.START);
     }

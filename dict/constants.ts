@@ -1,3 +1,5 @@
+import { BarrierRandom } from "../apps/domain/random";
+
 export enum EventType {
     EVENT = 'event'
 }
@@ -55,7 +57,29 @@ export enum TrackEventType {
     STOPPED = 'track_stopped'
 }
 
+console.log('process.env: ', process.env);
+
 export const TIMEOUTS = {
     DEFAULT: 1000,
+    GAME_TICK_MIN: parseInt(process.env.GAME_TICK_TIMEOUT_MIN) ?? 1000, 
+    GAME_TICK_MAX: parseInt(process.env.GAME_TICK_TIMEOUT_MAX) ?? 1000,
+    GAME_TICK: BarrierRandom.getRandomIntInRange(
+        parseInt(process.env.GAME_TICK_TIMEOUT_MIN) ?? 1000, 
+        parseInt(process.env.GAME_TICK_TIMEOUT_MAX) ?? 1000),
+    TRACK_TICK: BarrierRandom.getRandomIntInRange(
+        parseInt(process.env.TRACK_TICK_TIMEOUT_MIN) ?? 1000, 
+        parseInt(process.env.TRACK_TICK_TIMEOUT_MAX) ?? 1000),
+    TRACK_TICK_MIN: parseInt(process.env.TRACK_TICK_TIMEOUT_MIN) ?? 1000,
+    TRACK_TICK_MAX: parseInt(process.env.TRACK_TICK_TIMEOUT_MAX) ?? 1000,
+    EVENT_TICK: BarrierRandom.getRandomIntInRange(
+        parseInt(process.env.EVENT_TICK_TIMEOUT_MIN) ?? 1000, 
+        parseInt(process.env.EVENT_TICK_TIMEOUT_MAX) ?? 1000),
+    EVENT_TICK_MIN: parseInt(process.env.EVENT_TICK_TIMEOUT_MIN) ?? 1000,
+    EVENT_TICK_MAX: parseInt(process.env.EVENT_TICK_TIMEOUT_MAX) ?? 1000,
     EVENT: 1000
 } as const; 
+
+console.log('TIMEOUTS', TIMEOUTS);
+
+export const CORE_TTL_MIN = parseInt(process.env.CORE_TTL_MIN) ?? 1000;
+export const CORE_TTL_MAX = parseInt(process.env.CORE_TTL_MAX) ?? 1000;

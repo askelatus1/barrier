@@ -4,6 +4,10 @@ export class BarrierRandom {
         return Math.floor(Math.random() * max);
     }
 
+    static getRandomIntInRange(min: number, max: number): number {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
     static selectRandom<T = unknown>(list: T[]): T {
         return this.selectRandomUniq(list, 1)[0];
     }
