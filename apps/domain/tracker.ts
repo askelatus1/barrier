@@ -2,6 +2,7 @@ import {BarrierContext, BarrierEvent, Track, Faction, Region, MilitaryFaction} f
 import {BarrierRandom} from "./random";
 import {TIMEOUTS, ActorType, NotifyType, RegionStatus, TerritoryRuleType, TrackEventType} from "../../dict/constants";
 import {ActionType} from "../../interfaces/event";
+import {TrackResponse} from "../../interfaces/track";
 
 /**
  * Трекер событий игры. Отслеживает и управляет жизненным циклом событий.
@@ -232,12 +233,12 @@ export class BarrierTracker {
 
             // Отправляем событие в API
             this.ctx.apiService.broadcastEvent({
-                type: 'track_created',
+                type: TrackEventType.CREATED,
                 data: {
                     trackId: track.id,
                     eventId: track.eventId,
                     territoryId: track.territory?.id,
-                    actors: track.actors.map(actor => actor.id)
+                    actorIds: track.actors.map(actor => actor.id)
                 }
             });
 
@@ -299,7 +300,7 @@ export class BarrierTracker {
                 eventId: track.eventId,
                 status: status,
                 territoryId: track.territory?.id,
-                actors: track.actors.map(actor => actor.id)
+                actorIds: track.actors.map(actor => actor.id)
             }
         });
 

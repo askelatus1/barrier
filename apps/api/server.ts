@@ -4,6 +4,7 @@ import { config } from 'dotenv';
 import { BarrierContext } from '../../interfaces';
 import { IApiService, ServerSentEvent } from '../../interfaces/services';
 import { TrackEventType } from '../../dict/constants';
+import { TrackResponse } from '../../interfaces/track';
 
 // Load environment variables
 config();
@@ -44,6 +45,38 @@ export class ApiService implements IApiService {
     }
 
     private setupRoutes(): void {
+        // SSE endpoint for application events
+        this.app.get('/api/events/stream', (req, res) => {
+            console.log('New SSE connection request');
+            
+            // Настройка SSE соединения
+            res.writeHead(200, {
+                'Content-Type': 'text/event-stream',
+                'Cache-Control': 'no-cache',
+                'Connection': 'keep-alive',
+                'Access-Control-Allow-Origin': '*'
+            });
+            res.write('\n');
+
+            // Добавляем клиента в список подписчиков
+            this.eventSubscribers.add(res);
+            console.log(`New SSE client connected. Total subscribers: ${this.eventSubscribers.size}`);
+
+            // Отправляем начальное сообщение
+            this.broadcastEvent({
+                type: 'connection_established',
+                data: {
+                    message: 'Connected to event stream'
+                }
+            });
+
+            // Обработка закрытия соединения
+            req.on('close', () => {
+                this.eventSubscribers.delete(res);
+                console.log(`SSE client disconnected. Remaining subscribers: ${this.eventSubscribers.size}`);
+            });
+        });
+
         // Actors endpoints
         this.app.get('/api/actors', (req, res) => {
             const actors = this.ctx.actorEngine.getActorsAll();
@@ -145,7 +178,15 @@ export class ApiService implements IApiService {
         // Tracks endpoints
         this.app.get('/api/tracks', (req, res) => {
             const tracks = this.ctx.tracker.getAllTracks();
-            res.json(tracks);
+            const trackResponses: TrackResponse[] = tracks.map(track => ({
+                id: track.id,
+                eventId: track.eventId,
+                timeout: track.timeout,
+                territoryId: track.territory?.id,
+                actorIds: track.actors.map(actor => actor.id),
+                status: track.status
+            }));
+            res.json(trackResponses);
         });
 
         this.app.get('/api/tracks/:trackId', (req, res) => {
@@ -157,7 +198,16 @@ export class ApiService implements IApiService {
                 res.status(404).json({ error: `Track with id ${trackId} not found` });
                 return;
             }
-            res.json(track);
+
+            const trackResponse: TrackResponse = {
+                id: track.id,
+                eventId: track.eventId,
+                timeout: track.timeout,
+                territoryId: track.territory?.id,
+                actorIds: track.actors.map(actor => actor.id),
+                status: track.status
+            };
+            res.json(trackResponse);
         });
 
         this.app.post('/api/tracks', (req, res) => {
@@ -206,33 +256,6 @@ export class ApiService implements IApiService {
                 console.error('Error stopping track:', error);
                 res.status(500).json({ error: 'Failed to stop track' });
             }
-        });
-
-        // SSE endpoint for application events
-        this.app.get('/api/events/stream', (req, res) => {
-            // Настройка SSE соединения
-            res.writeHead(200, {
-                'Content-Type': 'text/event-stream',
-                'Cache-Control': 'no-cache',
-                'Connection': 'keep-alive'
-            });
-            res.write('\n');
-
-            // Добавляем клиента в список подписчиков
-            this.eventSubscribers.add(res);
-
-            // Отправляем начальное сообщение
-            this.broadcastEvent({
-                type: 'connection_established',
-                data: {
-                    message: 'Connected to event stream'
-                }
-            });
-
-            // Обработка закрытия соединения
-            req.on('close', () => {
-                this.eventSubscribers.delete(res);
-            });
         });
 
         // Error handling middleware

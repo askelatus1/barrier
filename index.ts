@@ -63,7 +63,7 @@ new Notifier(ctx,
 
 // ctx.eventEngine.createEventById('refugee_crisis', monolith);
 
-// ctx.core.start();
+ctx.core.start();
 ctx.apiService.start();
 
 // Добавляем обработчики для корректного завершения всех процессов
