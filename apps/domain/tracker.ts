@@ -226,6 +226,16 @@ export class BarrierTracker {
                     actorIds: track.actors.map(actor => actor.id)
                 }
             });
+            // Отправляем событие region_updated с обновленным регионом
+            if (track.territory?.id) {
+                const updatedRegion = this.ctx.regionService.getRegionById(track.territory.id);
+                if (updatedRegion) {
+                    this.ctx.apiService.broadcastEvent({
+                        type: 'region_updated',
+                        data: updatedRegion
+                    });
+                }
+            }
 
         } catch (error) {
             console.error('Failed to track event:', {
@@ -266,6 +276,15 @@ export class BarrierTracker {
         const notifyType = status === 'resolve' ? NotifyType.RESOLVE : NotifyType.REJECT;
         // Для события захвата при успешном выполнении устанавливаем фракцию
         const event = this.ctx.eventEngine.getEventById(track.eventId);
+        
+        if (event?.actionType === ActionType.WAR && track.territory) {
+            // Устанавливаем статус Wreckage для территории после военного события
+            this.ctx.regionService.updateRegionStatus(track.territory.id, RegionStatus.WRECKAGE);
+        } else if (event?.actionType === ActionType.WRECKAGE && track.territory) {
+            // Возвращаем статус Peace после события Wreckage
+            this.ctx.regionService.updateRegionStatus(track.territory.id, RegionStatus.PEACE);
+        }
+
         if (event?.actionType === ActionType.CAPTURE && status === 'resolve' && track.territory) {
             // Инициализируем фракцию в регионе
             const initiator = track.actors[0];
@@ -274,12 +293,26 @@ export class BarrierTracker {
                 this.ctx.actorZoneService.refreshZone(this.ctx.actorZoneService.getZoneByFactionId(actor.id));                
             }
         }
-        console.log(`track ${track.id} ending with status: ${status}`);
-        this.ctx.notifier.notify(track, notifyType);
+        
+        
+        // // Отправляем событие об обновлении статуса
+        // this.ctx.apiService.broadcastEvent({
+            //     type: TrackEventType.UPDATED,
+            //     data: {
+                //         trackId: track.id,
+                //         eventId: track.eventId,
+                //         status: status,
+                //         territoryId: track.territory?.id,
+                //         actorIds: track.actors.map(actor => actor.id)
+                //     }
+                // });
+                
+        this.#removeTrack(track);
+        if (notifyType === NotifyType.RESOLVE) this.ctx.notifier.notify(track, notifyType);
 
         // Отправляем событие об обновлении статуса
         this.ctx.apiService.broadcastEvent({
-            type: TrackEventType.UPDATED,
+            type: TrackEventType.STOPPED,
             data: {
                 trackId: track.id,
                 eventId: track.eventId,
@@ -288,8 +321,16 @@ export class BarrierTracker {
                 actorIds: track.actors.map(actor => actor.id)
             }
         });
-
-        this.#removeTrack(track);
+        // Отправляем событие region_updated с обновленным регионом
+        if (track.territory?.id) {
+            const updatedRegion = this.ctx.regionService.getRegionById(track.territory.id);
+            if (updatedRegion) {
+                this.ctx.apiService.broadcastEvent({
+                    type: 'region_updated',
+                    data: updatedRegion
+                });
+            }
+        }
     }
 
     /**

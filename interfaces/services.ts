@@ -75,7 +75,6 @@ export interface IRegionService {
      * @returns Array of military regions
      */
     getMilitaryRegions(): Region[];
-
 }
 
 /**

@@ -22,15 +22,12 @@ export class GameCore {
     }
 
     tick(){
-        // logic
-        console.log('Game core ticked', performance.now());
         if(this.ttl <= 0) this.addEvent();
         this.scheduler = setTimeout(() => this.tick(), BarrierRandom.getRandomIntInRange(TIMEOUTS.GAME_TICK_MIN, TIMEOUTS.GAME_TICK_MAX));
         this.ttl--;
     }
 
     addEvent(): void {
-        console.log('Game core addEvent fired: ', performance.now());
         this.ttl = BarrierRandom.getRandomIntInRange(CORE_TTL_MIN, CORE_TTL_MAX);
        
         // Создаем пул доступных событий

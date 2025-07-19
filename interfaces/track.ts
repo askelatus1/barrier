@@ -1,4 +1,3 @@
-import {BarrierEvent} from "./event";
 import {Faction} from "./faction";
 import {Region} from "./region";
 
